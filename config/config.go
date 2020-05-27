@@ -10,15 +10,15 @@ type Config struct {
 	Env     *Env
 }
 
+var C *Config
+
 // Init Initializes Global Config
-func Init() (*Config, error) {
+func Init() {
 
-	newConfig := new(Config)
+	C = new(Config)
 
-	newConfig.Env = LoadEnvironment()
+	C.Env = LoadEnvironment()
 
-	newConfig.ConnectMongo()
-
-	return newConfig, nil
+	C.ConnectMongo()
 
 }
