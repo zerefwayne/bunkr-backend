@@ -12,12 +12,15 @@ import (
 // Config defines the global config object
 type Config struct {
 	MongoDB *mongo.Client
+	Env     *Env
 }
 
 // Init Initializes Global Config
 func Init() (*Config, error) {
 
 	newConfig := new(Config)
+
+	newConfig.Env = LoadEnvironment()
 
 	newConfig.ConnectMongo()
 
@@ -30,12 +33,12 @@ func (c *Config) ConnectMongo() {
 
 	ctx := context.Background()
 
-	host := "localhost"
-	port := "27017"
-	database := "collegeportal"
-	user := ""
-	password := ""
-	srvMode := "false"
+	host := c.Env.MongoDBEnv.Host
+	port := c.Env.MongoDBEnv.Port
+	database := c.Env.MongoDBEnv.Database
+	user := c.Env.MongoDBEnv.User
+	password := c.Env.MongoDBEnv.Password
+	srvMode := c.Env.MongoDBEnv.SRV
 
 	mongoURI := ""
 
@@ -60,5 +63,4 @@ func (c *Config) ConnectMongo() {
 	} else {
 		log.Printf("database	| connected successfully: %s\n", mongoURI)
 	}
-
 }
