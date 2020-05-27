@@ -10,7 +10,7 @@ import (
 )
 
 type userRepository struct {
-	Conn *mongo.Database
+	DB *mongo.Database
 }
 
 // NewMongoUserRepository ...
@@ -18,7 +18,7 @@ func NewMongoUserRepository(client *mongo.Client) user.Repository {
 	database := client.Database(config.C.Env.Database)
 
 	return &userRepository{
-		Conn: database,
+		DB: database,
 	}
 }
 
