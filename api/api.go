@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/resource"
 	"github.com/zerefwayne/college-portal-backend/user"
 )
@@ -32,12 +33,17 @@ func CORSHandler() http.Handler {
 
 }
 
+func getPort() string {
+	port := config.C.Env.APIEnv.Port
+	return ":" + port
+}
+
 func Serve() {
 
 	handler := CORSHandler()
 
-	log.Println("api		| listening on port 5000")
+	log.Printf("api		| listening on port %s\n", getPort())
 
-	log.Fatalln(http.ListenAndServe(":5000", handler))
+	log.Fatalln(http.ListenAndServe(getPort(), handler))
 
 }

@@ -27,9 +27,18 @@ func (me *MongoDBEnv) Load() {
 	me.SRV = os.Getenv("MONGODB_SRV")
 }
 
+type APIEnv struct {
+	Port string
+}
+
+func (a *APIEnv) Load() {
+	a.Port = os.Getenv("API_PORT")
+}
+
 // Env ...
 type Env struct {
 	MongoDBEnv
+	APIEnv
 }
 
 // LoadEnvironment Loads environment variables
@@ -42,6 +51,7 @@ func LoadEnvironment() *Env {
 
 	env := new(Env)
 
+	env.APIEnv.Load()
 	env.MongoDBEnv.Load()
 
 	return env
