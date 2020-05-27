@@ -19,7 +19,7 @@ type userRepository struct {
 
 // NewUserRepository ...
 func NewUserRepository() Repository {
-	return &userUsecase{}
+	return &userRepository{}
 }
 
 func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
