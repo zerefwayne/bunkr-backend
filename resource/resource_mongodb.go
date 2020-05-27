@@ -1,11 +1,10 @@
-package repository
+package resource
 
 import (
 	"context"
 
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
-	"github.com/zerefwayne/college-portal-backend/resource"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -14,7 +13,7 @@ type resourceRepository struct {
 }
 
 // NewMongoResourceRepository ...
-func NewMongoResourceRepository(client *mongo.Client) resource.Repository {
+func NewMongoResourceRepository(client *mongo.Client) Repository {
 	database := client.Database(config.C.Env.Database)
 
 	return &resourceRepository{
