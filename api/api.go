@@ -6,14 +6,20 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"github.com/zerefwayne/college-portal-backend/resource"
+	"github.com/zerefwayne/college-portal-backend/user"
 )
 
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter()
 
-	return router
+	router.StrictSlash(true)
 
+	user.SetUserHandlers(router.PathPrefix("/api/user").Subrouter())
+	resource.SetResourceHandlers(router.PathPrefix("/api/resource").Subrouter())
+
+	return router
 }
 
 func CORSHandler() http.Handler {
