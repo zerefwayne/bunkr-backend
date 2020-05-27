@@ -55,6 +55,10 @@ func (c *Config) ConnectMongo() {
 
 	c.MongoDB = client
 
-	log.Printf("database	| connected successfully: %s\n", mongoURI)
+	if err := c.MongoDB.Ping(context.Background(), nil); err != nil {
+		log.Fatalln(err)
+	} else {
+		log.Printf("database	| connected successfully: %s\n", mongoURI)
+	}
 
 }
