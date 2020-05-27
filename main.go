@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/zerefwayne/college-portal-backend/api"
 	"github.com/zerefwayne/college-portal-backend/config"
 )
 
@@ -9,5 +10,5 @@ func init() {
 }
 
 func main() {
-	select {}
+	api.Serve()
 }
