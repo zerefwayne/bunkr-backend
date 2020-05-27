@@ -16,7 +16,6 @@ func (c *Config) ConnectMongo() {
 
 	host := c.Env.MongoDBEnv.Host
 	port := c.Env.MongoDBEnv.Port
-	database := c.Env.MongoDBEnv.Database
 	user := c.Env.MongoDBEnv.User
 	password := c.Env.MongoDBEnv.Password
 	srvMode := c.Env.MongoDBEnv.SRV
@@ -26,7 +25,7 @@ func (c *Config) ConnectMongo() {
 	if srvMode == "true" {
 		mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@%s", user, password, host)
 	} else {
-		mongoURI = fmt.Sprintf("mongodb://%s:%s/%s", host, port, database)
+		mongoURI = fmt.Sprintf("mongodb://%s:%s", host, port)
 	}
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
