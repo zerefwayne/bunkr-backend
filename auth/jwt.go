@@ -7,12 +7,13 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
 )
 
 func generateJWTString(user *models.User) (string, error) {
 
-	signingKey := []byte("secret123")
+	signingKey := []byte(config.C.Env.APIEnv.SigningKey)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp": time.Now().Add(time.Minute * 5).Unix(),
@@ -26,7 +27,7 @@ func generateJWTString(user *models.User) (string, error) {
 
 func verifyJWT(tokenString string) (jwt.Claims, error) {
 
-	signingKey := []byte("secret123")
+	signingKey := []byte(config.C.Env.APIEnv.SigningKey)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return signingKey, nil

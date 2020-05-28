@@ -18,7 +18,7 @@ type MongoDBEnv struct {
 }
 
 // Load Loads MongoDB Environment Variables
-func (me *MongoDBEnv) Load() {
+func (me *MongoDBEnv) load() {
 	me.Host = os.Getenv("MONGODB_HOST")
 	me.Port = os.Getenv("MONGODB_PORT")
 	me.Database = os.Getenv("MONGODB_DATABASE")
@@ -28,11 +28,13 @@ func (me *MongoDBEnv) Load() {
 }
 
 type APIEnv struct {
-	Port string
+	Port       string
+	SigningKey string
 }
 
-func (a *APIEnv) Load() {
+func (a *APIEnv) load() {
 	a.Port = os.Getenv("API_PORT")
+	a.SigningKey = os.Getenv("API_SIGNING_KEY")
 }
 
 // Env ...
@@ -51,8 +53,8 @@ func LoadEnvironment() *Env {
 
 	env := new(Env)
 
-	env.APIEnv.Load()
-	env.MongoDBEnv.Load()
+	env.APIEnv.load()
+	env.MongoDBEnv.load()
 
 	return env
 
