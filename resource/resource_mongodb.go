@@ -2,6 +2,7 @@ package resource
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/zerefwayne/college-portal-backend/config"
@@ -93,4 +94,23 @@ func (r *resourceRepository) GetResourcesByUserID(ctx context.Context, id string
 	}
 
 	return resources, nil
+}
+
+func (r *resourceRepository) DeleteResourceByID(ctx context.Context, id string) error {
+
+	collection := r.DB.Collection("resources")
+
+	filter := bson.M{"_id": id}
+
+	deleteResult, err := collection.DeleteOne(ctx, filter)
+
+	if err != nil {
+		return err
+	}
+
+	if deleteResult.DeletedCount == 0 {
+		return errors.New("document doesn't exist")
+	}
+
+	return err
 }

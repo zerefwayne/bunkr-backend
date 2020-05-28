@@ -14,6 +14,7 @@ type Usecase interface {
 	GetResourcesAll(ctx context.Context) ([]*models.Resource, error)
 	GetResourceByID(ctx context.Context, id string) (*models.Resource, error)
 	GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error)
+	DeleteResourceByID(ctx context.Context, id string) error
 }
 
 type resourceUsecase struct {
@@ -52,4 +53,12 @@ func (u *resourceUsecase) GetResourcesByUserID(ctx context.Context, id string) (
 	resources, err := u.resourceRepo.GetResourcesByUserID(ctx, id)
 
 	return resources, err
+}
+
+func (u *resourceUsecase) DeleteResourceByID(ctx context.Context, id string) error {
+
+	err := u.resourceRepo.DeleteResourceByID(ctx, id)
+
+	return err
+
 }

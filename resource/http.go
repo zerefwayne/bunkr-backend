@@ -28,6 +28,7 @@ func SetResourceHandlers(r *mux.Router) {
 	r.HandleFunc("/create", createResourceHandler)
 	r.HandleFunc("/user", getUserResources)
 	r.HandleFunc("/all", getAllResources)
+	r.HandleFunc("/delete", deleteResourceByIDHandler)
 
 }
 
@@ -122,5 +123,29 @@ func getAllResources(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+}
+
+func deleteResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	var body struct {
+		ID string `json:"id,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	defer r.Body.Close()
+
+	err := usecase.DeleteResourceByID(context.Background(), body.ID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "delete success %s", body.ID)
 
 }

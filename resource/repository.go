@@ -12,4 +12,5 @@ type Repository interface {
 	GetResourcesAll(ctx context.Context) ([]*models.Resource, error)
 	GetResourceByID(ctx context.Context, id string) (*models.Resource, error)
 	GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error)
+	DeleteResourceByID(ctx context.Context, id string) error
 }
