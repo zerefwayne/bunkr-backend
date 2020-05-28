@@ -16,7 +16,7 @@ func GenerateJWTString(user *models.User) (string, error) {
 	signingKey := []byte(config.C.Env.APIEnv.SigningKey)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp": time.Now().Add(time.Minute * 5).Unix(),
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
 		"id":  user.ID,
 	})
 
