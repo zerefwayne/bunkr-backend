@@ -2,7 +2,9 @@ package resource
 
 import (
 	"context"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/zerefwayne/college-portal-backend/models"
 )
 
@@ -26,7 +28,13 @@ func NewResourceUsecase(r Repository) Repository {
 }
 
 func (u *resourceUsecase) CreateResource(ctx context.Context, resource *models.Resource) error {
-	return nil
+
+	resource.ID = uuid.New().String()
+	resource.CreatedAt = time.Now()
+
+	err := u.resourceRepo.CreateResource(ctx, resource)
+
+	return err
 }
 
 func (u *resourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {

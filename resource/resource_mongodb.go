@@ -22,7 +22,12 @@ func NewMongoResourceRepository(client *mongo.Client) Repository {
 }
 
 func (r *resourceRepository) CreateResource(ctx context.Context, resource *models.Resource) error {
-	return nil
+
+	collection := r.DB.Collection("resources")
+
+	_, err := collection.InsertOne(ctx, resource)
+
+	return err
 }
 
 func (r *resourceRepository) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {

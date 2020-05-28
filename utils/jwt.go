@@ -60,8 +60,6 @@ func SecureRoute(next http.Handler) http.Handler {
 
 		claimsMap := claims.(jwt.MapClaims)
 
-		fmt.Println(claimsMap)
-
 		id := fmt.Sprintf("%v", claimsMap["id"])
 
 		r.Header.Set("id", id)
