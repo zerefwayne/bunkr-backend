@@ -14,6 +14,7 @@ var (
 	usecase Usecase
 )
 
+// SetUserHandlers ...
 func SetUserHandlers(r *mux.Router) {
 
 	repo = NewMongoUserRepository(config.C.MongoDB)
