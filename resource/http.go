@@ -26,6 +26,7 @@ func SetResourceHandlers(r *mux.Router) {
 
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/create", createResourceHandler)
+	r.HandleFunc("/user", getUserResources)
 
 }
 
@@ -63,6 +64,34 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(newResource); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+}
+
+func getUserResources(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+
+	resources, err := usecase.GetResourcesByUserID(context.Background(), userID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var response struct {
+		Length    int                `json:"length"`
+		Resources []*models.Resource `json:"resources"`
+	}
+
+	response.Length = len(resources)
+	response.Resources = resources
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

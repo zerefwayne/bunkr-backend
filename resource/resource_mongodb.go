@@ -2,9 +2,11 @@ package resource
 
 import (
 	"context"
+	"log"
 
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -38,6 +40,32 @@ func (r *resourceRepository) GetResourceByID(ctx context.Context, id string) (*m
 	return nil, nil
 }
 
-func (r *resourceRepository) GetResourceByUserID(ctx context.Context, id string) ([]*models.Resource, error) {
-	return nil, nil
+func (r *resourceRepository) GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error) {
+
+	collection := r.DB.Collection("resources")
+
+	filter := bson.M{"created_by": id}
+
+	results, err := collection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var resources []*models.Resource
+
+	for results.Next(ctx) {
+
+		resource := new(models.Resource)
+
+		if err := results.Decode(resource); err != nil {
+			log.Println(err)
+			return resources, err
+		}
+
+		resources = append(resources, resource)
+
+	}
+
+	return resources, nil
 }
