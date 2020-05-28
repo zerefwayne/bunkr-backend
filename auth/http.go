@@ -86,7 +86,22 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	user.Password = ""
 
-	if err := json.NewEncoder(w).Encode(user); err != nil {
+	jwtToken, err := generateJWTString(user)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var loginResponse struct {
+		User  *models.User `json:"user,omitempty"`
+		Token string       `json:"token,omitempty"`
+	}
+
+	loginResponse.User = user
+	loginResponse.Token = jwtToken
+
+	if err := json.NewEncoder(w).Encode(loginResponse); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
