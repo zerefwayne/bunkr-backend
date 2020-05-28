@@ -27,8 +27,9 @@ type signUpBody struct {
 }
 
 type loginBody struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email    string `json:"email,omitempty"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 func initUsecase() {
@@ -62,7 +63,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	user, err := usecase.user.GetByUsername(context.Background(), body.Username)
+	var user *models.User
+	var err error
+
+	if len(body.Email) > 0 {
+		user, err = usecase.user.GetByEmail(context.Background(), body.Email)
+	} else if len(body.Username) > 0 {
+		user, err = usecase.user.GetByUsername(context.Background(), body.Username)
+	}
+
+	fmt.Printf("%+v\n", user)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
