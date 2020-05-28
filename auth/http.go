@@ -10,6 +10,7 @@ import (
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/user"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type authUsecase struct {
@@ -61,7 +62,33 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	fmt.Fprintf(w, "%+v\n", body)
+	user, err := usecase.user.GetByUsername(context.Background(), body.Username)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := compareHashAndPassword(body.Password, user.Password); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user.Password = ""
+
+	if err := json.NewEncoder(w).Encode(user); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+}
+
+func compareHashAndPassword(password string, hash string) error {
+
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
+	return err
+
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
