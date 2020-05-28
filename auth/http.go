@@ -43,6 +43,7 @@ func initUsecase() {
 
 }
 
+// SetAuthHandlers ...
 func SetAuthHandlers(r *mux.Router) {
 
 	initUsecase()
@@ -100,6 +101,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	loginResponse.User = user
 	loginResponse.Token = jwtToken
+
+	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(loginResponse); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
