@@ -1,14 +1,22 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
+	"github.com/zerefwayne/college-portal-backend/user"
 )
+
+type authUsecase struct {
+	user user.Usecase
+}
+
+var usecase authUsecase
 
 type signUpBody struct {
 	Username string `json:"username"`
@@ -22,7 +30,21 @@ type loginBody struct {
 	Password string `json:"password"`
 }
 
+func initUsecase() {
+
+	userRepository := user.NewMongoUserRepository(config.C.MongoDB)
+	userUsecase := user.NewUserUsecase(userRepository)
+
+	usecase = authUsecase{
+		user: userUsecase,
+	}
+
+}
+
 func SetAuthHandlers(r *mux.Router) {
+
+	initUsecase()
+
 	r.HandleFunc("/login", loginHandler)
 	r.HandleFunc("/logout", logoutHandler)
 	r.HandleFunc("/signup", signUpHandler)
@@ -58,12 +80,19 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	newUser := &models.User{
-		ID:       uuid.New().String(),
 		Username: body.Username,
 		Email:    body.Email,
 		Password: body.Password,
 		Name:     body.Name,
 	}
 
-	fmt.Fprintf(w, "%+v\n", newUser)
+	err := usecase.user.CreateUser(context.Background(), newUser)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "User creation successful! %+v\n", newUser)
+
 }
