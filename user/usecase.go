@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/zerefwayne/college-portal-backend/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var ctx context.Context = context.Background()
@@ -61,6 +62,14 @@ func (u *userUsecase) CreateUser(ctx context.Context, user *models.User) error {
 		return errors.New("username already exists")
 	}
 
+	hash, err := generateHashFromPassword(user.Password)
+
+	if err != nil {
+		return err
+	}
+
+	user.Password = hash
+
 	u.userRepo.CreateUser(ctx, user)
 
 	return nil
@@ -68,4 +77,14 @@ func (u *userUsecase) CreateUser(ctx context.Context, user *models.User) error {
 
 func (u *userUsecase) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 	return nil, nil
+}
+
+func generateHashFromPassword(password string) (string, error) {
+
+	bytePassword := []byte(password)
+
+	hash, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.MinCost)
+
+	return string(hash), err
+
 }
