@@ -2,10 +2,10 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -27,21 +27,22 @@ func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, 
 }
 
 func (r *userRepository) GetByUsername(ctx context.Context, username string) (*models.User, error) {
-	return nil, nil
+
+	filter := bson.M{"username": username}
+
+	var user models.User
+
+	err := r.DB.Collection("user").FindOne(ctx, filter).Decode(&user)
+
+	return &user, err
 }
+
 func (r *userRepository) CreateUser(ctx context.Context, user *models.User) error {
 
-	fmt.Printf("mongodb %+v\n", user)
+	_, err := r.DB.Collection("user").InsertOne(ctx, user)
 
-	result, err := r.DB.Collection("user").InsertOne(ctx, user)
+	return err
 
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("successfully written! %+v\n", result)
-
-	return nil
 }
 func (r *userRepository) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 	return nil, nil

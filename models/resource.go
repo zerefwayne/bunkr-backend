@@ -4,7 +4,7 @@ import "time"
 
 // Resource Defines the Resource Schema
 type Resource struct {
-	ID         string    `json:"id", son:"id"`
+	ID         string    `json:"id", bson:"id"`
 	Content    string    `json:"content", bson:"content"`
 	CreatedAt  time.Time `json:"created_at", bson:"created_at"`
 	CreatedBy  string    `json:"created_by", bson:"created_by"`

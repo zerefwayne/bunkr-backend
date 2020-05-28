@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/zerefwayne/college-portal-backend/models"
@@ -34,15 +33,16 @@ func (u *userUsecase) GetByID(ctx context.Context, id string) (*models.User, err
 }
 
 func (u *userUsecase) GetByUsername(ctx context.Context, username string) (*models.User, error) {
-	return nil, nil
+
+	user, err := u.userRepo.GetByUsername(ctx, username)
+
+	return user, err
 }
 
 func (u *userUsecase) CreateUser(ctx context.Context, user *models.User) error {
 
 	// Set new user ID
 	user.ID = uuid.New().String()
-
-	fmt.Printf("usecase %+v\n", user)
 
 	u.userRepo.CreateUser(ctx, user)
 
