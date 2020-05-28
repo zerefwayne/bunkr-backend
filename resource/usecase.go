@@ -38,7 +38,9 @@ func (u *resourceUsecase) CreateResource(ctx context.Context, resource *models.R
 }
 
 func (u *resourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {
-	return nil, nil
+	resources, err := u.resourceRepo.GetResourcesAll(ctx)
+
+	return resources, err
 }
 
 func (u *resourceUsecase) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {

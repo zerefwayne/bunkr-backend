@@ -33,7 +33,32 @@ func (r *resourceRepository) CreateResource(ctx context.Context, resource *model
 }
 
 func (r *resourceRepository) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {
-	return nil, nil
+	collection := r.DB.Collection("resources")
+
+	filter := bson.M{}
+
+	results, err := collection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var resources []*models.Resource
+
+	for results.Next(ctx) {
+
+		resource := new(models.Resource)
+
+		if err := results.Decode(resource); err != nil {
+			log.Println(err)
+			return resources, err
+		}
+
+		resources = append(resources, resource)
+
+	}
+
+	return resources, nil
 }
 
 func (r *resourceRepository) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {
