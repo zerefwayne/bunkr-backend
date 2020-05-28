@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/zerefwayne/college-portal-backend/models"
@@ -51,6 +52,14 @@ func (u *userUsecase) CreateUser(ctx context.Context, user *models.User) error {
 
 	// Set new user ID
 	user.ID = uuid.New().String()
+
+	if _, err := u.GetByEmail(ctx, user.Email); err == nil {
+		return errors.New("email already exists")
+	}
+
+	if _, err := u.GetByUsername(ctx, user.Username); err == nil {
+		return errors.New("username already exists")
+	}
 
 	u.userRepo.CreateUser(ctx, user)
 
