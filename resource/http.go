@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/zerefwayne/college-portal-backend/auth"
 	"github.com/zerefwayne/college-portal-backend/config"
+	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
 var (
@@ -19,7 +19,7 @@ func SetResourceHandlers(r *mux.Router) {
 	repo = NewMongoResourceRepository(config.C.MongoDB)
 	usecase = NewResourceUsecase(repo)
 
-	r.Use(auth.SecureRoute)
+	r.Use(utils.SecureRoute)
 
 	r.HandleFunc("/test", defaultHandler)
 

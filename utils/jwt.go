@@ -1,4 +1,4 @@
-package auth
+package utils
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"github.com/zerefwayne/college-portal-backend/models"
 )
 
-func generateJWTString(user *models.User) (string, error) {
+func GenerateJWTString(user *models.User) (string, error) {
 
 	signingKey := []byte(config.C.Env.APIEnv.SigningKey)
 
@@ -25,7 +25,7 @@ func generateJWTString(user *models.User) (string, error) {
 	return tokenString, err
 }
 
-func verifyJWT(tokenString string) (jwt.Claims, error) {
+func VerifyJWT(tokenString string) (jwt.Claims, error) {
 
 	signingKey := []byte(config.C.Env.APIEnv.SigningKey)
 
@@ -51,7 +51,7 @@ func SecureRoute(next http.Handler) http.Handler {
 
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
 
-		claims, err := verifyJWT(tokenString)
+		claims, err := VerifyJWT(tokenString)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)

@@ -10,7 +10,7 @@ import (
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/user"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
 type authUsecase struct {
@@ -80,14 +80,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := compareHashAndPassword(body.Password, user.Password); err != nil {
+	if err := utils.CompareHashAndPassword(body.Password, user.Password); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	user.Password = ""
 
-	jwtToken, err := generateJWTString(user)
+	jwtToken, err := utils.GenerateJWTString(user)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -108,15 +108,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-}
-
-func compareHashAndPassword(password string, hash string) error {
-
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-
-	return err
-
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -149,5 +140,4 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "User creation successful! %+v\n", newUser)
-
 }
