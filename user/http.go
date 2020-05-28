@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/zerefwayne/college-portal-backend/config"
+	"github.com/zerefwayne/college-portal-backend/models"
 )
 
 var (
@@ -21,7 +22,7 @@ func SetUserHandlers(r *mux.Router) {
 	usecase = NewUserUsecase(repo)
 
 	r.HandleFunc("/test", defaultHandler)
-	r.HandleFunc("/", getUserByUsernameHandler)
+	r.HandleFunc("/", getUserHandler)
 
 }
 
@@ -31,9 +32,19 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getUserByUsernameHandler(w http.ResponseWriter, r *http.Request) {
+func getUserHandler(w http.ResponseWriter, r *http.Request) {
 
-	user, err := usecase.GetByUsername(context.Background(), "zerefwayne")
+	username := r.URL.Query().Get("username")
+	email := r.URL.Query().Get("email")
+
+	var user *models.User
+	var err error
+
+	if len(username) > 0 {
+		user, err = usecase.GetByUsername(context.Background(), username)
+	} else if len(email) > 0 {
+		user, err = usecase.GetByEmail(context.Background(), email)
+	}
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

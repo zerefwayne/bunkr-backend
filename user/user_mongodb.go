@@ -37,6 +37,17 @@ func (r *userRepository) GetByUsername(ctx context.Context, username string) (*m
 	return &user, err
 }
 
+func (r *userRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
+
+	filter := bson.M{"email": email}
+
+	var user models.User
+
+	err := r.DB.Collection("user").FindOne(ctx, filter).Decode(&user)
+
+	return &user, err
+}
+
 func (r *userRepository) CreateUser(ctx context.Context, user *models.User) error {
 
 	_, err := r.DB.Collection("user").InsertOne(ctx, user)
