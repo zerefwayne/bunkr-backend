@@ -53,13 +53,36 @@ func SetAuthHandlers(r *mux.Router) {
 	r.HandleFunc("/signup", signUpHandler)
 }
 
+func respond(w http.ResponseWriter, body interface{}, code int) {
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	if err := json.NewEncoder(w).Encode(body); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+}
+
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var body loginBody
 
+	var loginResponse struct {
+		Success bool         `json:"success,omitempty"`
+		Error   string       `json:"error,omitempty"`
+		User    *models.User `json:"user,omitempty"`
+		Token   string       `json:"token,omitempty"`
+	}
+
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+
+		loginResponse.Success = false
+		loginResponse.Error = err.Error()
+
+		respond(w, loginResponse, http.StatusInternalServerError)
 		return
+
 	}
 
 	defer r.Body.Close()
@@ -73,15 +96,31 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		user, err = usecase.user.GetByUsername(context.Background(), body.Username)
 	}
 
+	if user == nil {
+
+		loginResponse.Success = false
+		loginResponse.Error = "user not found"
+
+		respond(w, loginResponse, http.StatusUnauthorized)
+		return
+
+	}
+
 	fmt.Printf("%+v\n", user)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		loginResponse.Success = false
+		loginResponse.Error = "user not found"
+
+		respond(w, loginResponse, http.StatusUnauthorized)
 		return
 	}
 
 	if err := utils.CompareHashAndPassword(body.Password, user.Password); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		loginResponse.Success = false
+		loginResponse.Error = "incorrect password"
+
+		respond(w, loginResponse, http.StatusUnauthorized)
 		return
 	}
 
@@ -90,24 +129,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	jwtToken, err := utils.GenerateJWTString(user)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		loginResponse.Success = false
+		loginResponse.Error = "error in jwt creation"
+
+		respond(w, loginResponse, http.StatusInternalServerError)
 		return
 	}
 
-	var loginResponse struct {
-		User  *models.User `json:"user,omitempty"`
-		Token string       `json:"token,omitempty"`
-	}
-
+	loginResponse.Success = true
+	loginResponse.Error = ""
 	loginResponse.User = user
 	loginResponse.Token = jwtToken
 
-	w.Header().Set("Content-Type", "application/json")
+	respond(w, loginResponse, http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(loginResponse); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
 }
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
