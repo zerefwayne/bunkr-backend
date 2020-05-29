@@ -3,7 +3,6 @@ package ui
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -54,8 +53,6 @@ func respond(w http.ResponseWriter, body interface{}, code int) {
 func initHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.Header.Get("id")
-
-	fmt.Println("Init Dashboard for", userID)
 
 	var initResponse struct {
 		Success bool         `json:"success"`

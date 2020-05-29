@@ -106,8 +106,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	fmt.Printf("%+v\n", user)
-
 	if err != nil {
 		loginResponse.Success = false
 		loginResponse.Error = "user not found"

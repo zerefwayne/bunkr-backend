@@ -11,6 +11,7 @@ import (
 	"github.com/zerefwayne/college-portal-backend/resource"
 	"github.com/zerefwayne/college-portal-backend/ui"
 	"github.com/zerefwayne/college-portal-backend/user"
+	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
 func NewRouter() *mux.Router {
@@ -18,6 +19,7 @@ func NewRouter() *mux.Router {
 	router := mux.NewRouter()
 
 	router.StrictSlash(true)
+	router.Use(utils.Logger)
 
 	user.SetUserHandlers(router.PathPrefix("/api/user").Subrouter())
 	resource.SetResourceHandlers(router.PathPrefix("/api/resource").Subrouter())
