@@ -9,6 +9,7 @@ import (
 	"github.com/zerefwayne/college-portal-backend/auth"
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/resource"
+	"github.com/zerefwayne/college-portal-backend/ui"
 	"github.com/zerefwayne/college-portal-backend/user"
 )
 
@@ -21,6 +22,7 @@ func NewRouter() *mux.Router {
 	user.SetUserHandlers(router.PathPrefix("/api/user").Subrouter())
 	resource.SetResourceHandlers(router.PathPrefix("/api/resource").Subrouter())
 	auth.SetAuthHandlers(router.PathPrefix("/api/auth").Subrouter())
+	ui.SetUIHandlers(router.PathPrefix("/api/ui").Subrouter())
 
 	return router
 }

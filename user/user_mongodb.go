@@ -23,7 +23,13 @@ func NewMongoUserRepository(client *mongo.Client) Repository {
 }
 
 func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
-	return nil, nil
+	filter := bson.M{"_id": id}
+
+	var user models.User
+
+	err := r.DB.Collection("user").FindOne(ctx, filter).Decode(&user)
+
+	return &user, err
 }
 
 func (r *userRepository) GetByUsername(ctx context.Context, username string) (*models.User, error) {

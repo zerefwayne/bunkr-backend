@@ -69,7 +69,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	var body loginBody
 
 	var loginResponse struct {
-		Success bool         `json:"success,omitempty"`
+		Success bool         `json:"success"`
 		Error   string       `json:"error,omitempty"`
 		User    *models.User `json:"user,omitempty"`
 		Token   string       `json:"token,omitempty"`
@@ -138,7 +138,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	loginResponse.Success = true
 	loginResponse.Error = ""
-	loginResponse.User = user
 	loginResponse.Token = jwtToken
 
 	respond(w, loginResponse, http.StatusOK)

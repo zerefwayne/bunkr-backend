@@ -32,7 +32,10 @@ func NewUserUsecase(r Repository) Usecase {
 }
 
 func (u *userUsecase) GetByID(ctx context.Context, id string) (*models.User, error) {
-	return nil, nil
+
+	user, err := u.userRepo.GetByID(ctx, id)
+
+	return user, err
 }
 
 func (u *userUsecase) GetByUsername(ctx context.Context, username string) (*models.User, error) {
