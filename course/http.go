@@ -53,7 +53,7 @@ func getAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
 func getCourseHandler(w http.ResponseWriter, r *http.Request) {
 
-	code := r.URL.Query().Get("id")
+	code := r.URL.Query().Get("code")
 
 	course, err := CourseUsecase.GetCourseByCode(context.Background(), code)
 
