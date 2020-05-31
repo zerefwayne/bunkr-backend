@@ -26,12 +26,12 @@ func SetCourseHandlers(r *mux.Router) {
 
 	r.Use(utils.SecureRoute)
 
-	r.HandleFunc("/all", GetAllCoursesHandler)
-	r.HandleFunc("/", GetCourseHandler)
+	r.HandleFunc("/all", getAllCoursesHandler)
+	r.HandleFunc("/", getCourseHandler)
 
 }
 
-func GetAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
+func getAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
 	courses, err := CourseUsecase.GetAllCourses(context.Background())
 
@@ -51,6 +51,23 @@ func GetAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetCourseHandler(w http.ResponseWriter, r *http.Request) {
+func getCourseHandler(w http.ResponseWriter, r *http.Request) {
+
+	code := r.URL.Query().Get("id")
+
+	course, err := CourseUsecase.GetCourseByCode(context.Background(), code)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var payload struct {
+		Course *models.Course `json:"course"`
+	}
+
+	payload.Course = course
+
+	respond(w, payload, http.StatusOK)
 
 }

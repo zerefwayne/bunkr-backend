@@ -63,7 +63,21 @@ func (r *resourceRepository) GetResourcesAll(ctx context.Context) ([]*models.Res
 }
 
 func (r *resourceRepository) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {
-	return nil, nil
+
+	collection := r.DB.Collection("resources")
+
+	filter := bson.M{"_id": id}
+
+	var resource models.Resource
+
+	err := collection.FindOne(ctx, filter).Decode(&resource)
+
+	if err != nil {
+
+		return nil, err
+	}
+
+	return &resource, nil
 }
 
 func (r *resourceRepository) GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error) {
@@ -82,14 +96,13 @@ func (r *resourceRepository) GetResourcesByUserID(ctx context.Context, id string
 
 	for results.Next(ctx) {
 
-		resource := new(models.Resource)
+		var resource models.Resource
 
-		if err := results.Decode(resource); err != nil {
-			log.Println(err)
+		if err := results.Decode(&resource); err != nil {
 			return resources, err
 		}
 
-		resources = append(resources, resource)
+		resources = append(resources, &resource)
 
 	}
 

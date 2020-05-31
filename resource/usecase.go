@@ -40,7 +40,8 @@ func (u *resourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resour
 }
 
 func (u *resourceUsecase) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {
-	return nil, nil
+	resource, err := u.resourceRepo.GetResourceByID(ctx, id)
+	return resource, err
 }
 
 func (u *resourceUsecase) GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error) {

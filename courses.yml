@@ -2,17 +2,17 @@ courses:
   - slug: 'computer-vision'
     code: 'icvi630e'
     name: 'Computer Vision'  
-    resources:
+    resource_ids:
       - 'br90s71rg2gutnmms5d0'
       - 'br90s8prg2gutnmms5dg'
   - slug: 'image-processing'
     code: 'iivp632c'
     name: 'Image and Video Processing'
-    resources:
+    resource_ids:
       - 'br90sa9rg2gutnmms5e0'
       - 'br90sk1rg2gutnmms5eg'
   - slug: 'compiler-design'
     code: 'icod632c'
     name: 'Compiler Design'
-    resources:
+    resource_ids:
       - 'br90sa9rg2gutnmms5e0'
