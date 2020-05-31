@@ -8,6 +8,7 @@ import (
 	"github.com/rs/cors"
 	"github.com/zerefwayne/college-portal-backend/auth"
 	"github.com/zerefwayne/college-portal-backend/config"
+	"github.com/zerefwayne/college-portal-backend/course"
 	"github.com/zerefwayne/college-portal-backend/resource"
 	"github.com/zerefwayne/college-portal-backend/ui"
 	"github.com/zerefwayne/college-portal-backend/user"
@@ -25,6 +26,7 @@ func NewRouter() *mux.Router {
 	resource.SetResourceHandlers(router.PathPrefix("/api/resource").Subrouter())
 	auth.SetAuthHandlers(router.PathPrefix("/api/auth").Subrouter())
 	ui.SetUIHandlers(router.PathPrefix("/api/ui").Subrouter())
+	course.SetCourseHandlers(router.PathPrefix("/api/course").Subrouter())
 
 	return router
 }
