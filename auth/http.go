@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -31,6 +32,35 @@ func SetAuthHandlers(r *mux.Router) {
 	r.HandleFunc("/login", loginHandler)
 	r.HandleFunc("/logout", logoutHandler)
 	r.HandleFunc("/signup", signUpHandler)
+
+	validate := r.PathPrefix("/validate").Subrouter()
+
+	validate.Use(utils.SecureRoute)
+
+	validate.HandleFunc("/", validateHandler)
+
+}
+
+func validateHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := r.Header.Get("id")
+
+	user, err := user.UserUsecase.GetByID(context.Background(), id)
+
+	if err != nil {
+		log.Println("error in validate", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var payload struct {
+		User *models.User `json:"user"`
+	}
+
+	payload.User = user
+
+	respond(w, payload, http.StatusOK)
+
 }
 
 func respond(w http.ResponseWriter, body interface{}, code int) {
@@ -116,6 +146,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	loginResponse.Success = true
 	loginResponse.Error = ""
+	loginResponse.User = userX
 	loginResponse.Token = jwtToken
 
 	respond(w, loginResponse, http.StatusOK)
