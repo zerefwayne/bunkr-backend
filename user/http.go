@@ -11,16 +11,10 @@ import (
 	"github.com/zerefwayne/college-portal-backend/models"
 )
 
-var (
-	repo    Repository
-	usecase Usecase
-)
-
 // SetUserHandlers ...
 func SetUserHandlers(r *mux.Router) {
 
-	repo = NewMongoUserRepository(config.C.MongoDB)
-	usecase = NewUserUsecase(repo)
+	UserUsecase.userRepo = newMongoUserRepository(config.C.MongoDB)
 
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/", getUserHandler)
@@ -42,9 +36,9 @@ func getUserHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if len(username) > 0 {
-		user, err = usecase.GetByUsername(context.Background(), username)
+		user, err = UserUsecase.GetByUsername(context.Background(), username)
 	} else if len(email) > 0 {
-		user, err = usecase.GetByEmail(context.Background(), email)
+		user, err = UserUsecase.GetByEmail(context.Background(), email)
 	}
 
 	if err != nil {

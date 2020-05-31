@@ -24,12 +24,7 @@ type userUsecase struct {
 	userRepo Repository
 }
 
-// NewUserUsecase ...
-func NewUserUsecase(r Repository) Usecase {
-	return &userUsecase{
-		userRepo: r,
-	}
-}
+var UserUsecase userUsecase
 
 func (u *userUsecase) GetByID(ctx context.Context, id string) (*models.User, error) {
 

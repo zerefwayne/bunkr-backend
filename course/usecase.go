@@ -15,10 +15,7 @@ type Usecase interface {
 type courseUsecase struct {
 }
 
-// NewCourseUsecase ...
-func NewCourseUsecase() Usecase {
-	return &courseUsecase{}
-}
+var CourseUsecase courseUsecase
 
 func (u *courseUsecase) GetAllCourses(ctx context.Context) ([]*models.Course, error) {
 	courses := config.Courses

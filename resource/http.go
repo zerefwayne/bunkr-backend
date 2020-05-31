@@ -12,15 +12,13 @@ import (
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
-var (
-	repo    Repository
-	usecase Usecase
-)
+func initResource() {
+	ResourceUsecase.resourceRepo = newMongoResourceRepository(config.C.MongoDB)
+}
 
 func SetResourceHandlers(r *mux.Router) {
 
-	repo = NewMongoResourceRepository(config.C.MongoDB)
-	usecase = NewResourceUsecase(repo)
+	initResource()
 
 	r.Use(utils.SecureRoute)
 
@@ -58,7 +56,7 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	newResource.Content = body.Content
 	newResource.CreatedBy = userID
 
-	if err := usecase.CreateResource(context.Background(), newResource); err != nil {
+	if err := ResourceUsecase.CreateResource(context.Background(), newResource); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -76,7 +74,7 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.Header.Get("id")
 
-	resources, err := usecase.GetResourcesByUserID(context.Background(), userID)
+	resources, err := ResourceUsecase.GetResourcesByUserID(context.Background(), userID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -102,7 +100,7 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 
 func getAllResources(w http.ResponseWriter, r *http.Request) {
 
-	resources, err := usecase.GetResourcesAll(context.Background())
+	resources, err := ResourceUsecase.GetResourcesAll(context.Background())
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -139,7 +137,7 @@ func deleteResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	err := usecase.DeleteResourceByID(context.Background(), body.ID)
+	err := ResourceUsecase.DeleteResourceByID(context.Background(), body.ID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

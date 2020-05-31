@@ -7,17 +7,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/user"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
-
-type authUsecase struct {
-	user user.Usecase
-}
-
-var usecase authUsecase
 
 type signUpBody struct {
 	Username string `json:"username"`
@@ -32,21 +25,8 @@ type loginBody struct {
 	Password string `json:"password,omitempty"`
 }
 
-func initUsecase() {
-
-	userRepository := user.NewMongoUserRepository(config.C.MongoDB)
-	userUsecase := user.NewUserUsecase(userRepository)
-
-	usecase = authUsecase{
-		user: userUsecase,
-	}
-
-}
-
 // SetAuthHandlers ...
 func SetAuthHandlers(r *mux.Router) {
-
-	initUsecase()
 
 	r.HandleFunc("/login", loginHandler)
 	r.HandleFunc("/logout", logoutHandler)
@@ -87,16 +67,16 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	var user *models.User
+	var userX *models.User
 	var err error
 
 	if len(body.Email) > 0 {
-		user, err = usecase.user.GetByEmail(context.Background(), body.Email)
+		userX, err = user.UserUsecase.GetByEmail(context.Background(), body.Email)
 	} else if len(body.Username) > 0 {
-		user, err = usecase.user.GetByUsername(context.Background(), body.Username)
+		userX, err = user.UserUsecase.GetByUsername(context.Background(), body.Username)
 	}
 
-	if user == nil {
+	if userX == nil {
 
 		loginResponse.Success = false
 		loginResponse.Error = "user not found"
@@ -114,7 +94,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := utils.CompareHashAndPassword(body.Password, user.Password); err != nil {
+	if err := utils.CompareHashAndPassword(body.Password, userX.Password); err != nil {
 		loginResponse.Success = false
 		loginResponse.Error = "incorrect password"
 
@@ -122,9 +102,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Password = ""
+	userX.Password = ""
 
-	jwtToken, err := utils.GenerateJWTString(user)
+	jwtToken, err := utils.GenerateJWTString(userX)
 
 	if err != nil {
 		loginResponse.Success = false
@@ -164,7 +144,7 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     body.Name,
 	}
 
-	err := usecase.user.CreateUser(context.Background(), newUser)
+	err := user.UserUsecase.CreateUser(context.Background(), newUser)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

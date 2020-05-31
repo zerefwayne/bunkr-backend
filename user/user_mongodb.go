@@ -14,7 +14,7 @@ type userRepository struct {
 }
 
 // NewMongoUserRepository ...
-func NewMongoUserRepository(client *mongo.Client) Repository {
+func newMongoUserRepository(client *mongo.Client) Repository {
 	database := client.Database(config.C.Env.Database)
 
 	return &userRepository{

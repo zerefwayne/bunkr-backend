@@ -16,7 +16,7 @@ type resourceRepository struct {
 }
 
 // NewMongoResourceRepository ...
-func NewMongoResourceRepository(client *mongo.Client) Repository {
+func newMongoResourceRepository(client *mongo.Client) Repository {
 	database := client.Database(config.C.Env.Database)
 
 	return &resourceRepository{

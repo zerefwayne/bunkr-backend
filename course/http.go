@@ -11,10 +11,6 @@ import (
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
-var (
-	usecase Usecase
-)
-
 func respond(w http.ResponseWriter, body interface{}, code int) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -28,17 +24,16 @@ func respond(w http.ResponseWriter, body interface{}, code int) {
 
 func SetCourseHandlers(r *mux.Router) {
 
-	usecase = NewCourseUsecase()
-
 	r.Use(utils.SecureRoute)
 
 	r.HandleFunc("/all", GetAllCoursesHandler)
+	r.HandleFunc("/", GetCourseHandler)
 
 }
 
 func GetAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
-	courses, err := usecase.GetAllCourses(context.Background())
+	courses, err := CourseUsecase.GetAllCourses(context.Background())
 
 	if err != nil {
 		log.Println("Error while get all courses", err.Error())
@@ -53,5 +48,9 @@ func GetAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 	payload.Courses = courses
 
 	respond(w, payload, http.StatusOK)
+
+}
+
+func GetCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 }
