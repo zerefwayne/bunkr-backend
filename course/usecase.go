@@ -32,7 +32,7 @@ func (u *courseUsecase) GetCourseByCode(ctx context.Context, code string) (*mode
 	for _, c := range config.Courses {
 
 		if c.Code == code {
-			course = c
+			course = &models.Course{Code: c.Code, Slug: c.Slug, ResourceIDs: c.ResourceIDs, Name: c.Name}
 			break
 		}
 
