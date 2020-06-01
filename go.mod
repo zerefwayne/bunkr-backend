@@ -14,5 +14,4 @@ require (
 	go.mongodb.org/mongo-driver v1.3.3
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
-	gopkg.in/yaml.v2 v2.3.0
 )

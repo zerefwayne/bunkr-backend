@@ -10,16 +10,19 @@ import (
 	"github.com/zerefwayne/college-portal-backend/course/repository"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/resource"
+	"github.com/zerefwayne/college-portal-backend/resource/usecase"
 )
 
 type courseUsecase struct {
 	courseRepo course.Repository
+	resource   resource.Usecase
 }
 
 func NewCourseUsecase() course.Usecase {
 
 	return &courseUsecase{
 		courseRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
+		resource:   usecase.NewResourceUsecase(),
 	}
 
 }
@@ -77,7 +80,7 @@ func (u *courseUsecase) GetCourseByCode(ctx context.Context, code string) (*mode
 
 		log.Println(resourceID)
 
-		resource, err := resource.ResourceUsecase.GetResourceByID(ctx, resourceID)
+		resource, err := u.resource.GetResourceByID(ctx, resourceID)
 
 		if err != nil {
 			return nil, err

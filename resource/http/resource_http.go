@@ -7,18 +7,19 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
+	"github.com/zerefwayne/college-portal-backend/resource"
+	"github.com/zerefwayne/college-portal-backend/resource/usecase"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
-func initResource() {
-	ResourceUsecase.resourceRepo = newMongoResourceRepository(config.C.MongoDB)
+var http_usecase struct {
+	resource resource.Usecase
 }
 
 func SetResourceHandlers(r *mux.Router) {
 
-	initResource()
+	http_usecase.resource = usecase.NewResourceUsecase()
 
 	r.Use(utils.SecureRoute)
 
@@ -57,7 +58,7 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	newResource.Content = body.Content
 	newResource.CreatedBy = userID
 
-	if err := ResourceUsecase.CreateResource(context.Background(), newResource); err != nil {
+	if err := http_usecase.resource.CreateResource(context.Background(), newResource); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -80,7 +81,7 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.Header.Get("id")
 
-	resources, err := ResourceUsecase.GetResourcesByUserID(context.Background(), userID)
+	resources, err := http_usecase.resource.GetResourcesByUserID(context.Background(), userID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -106,7 +107,7 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 
 func getAllResources(w http.ResponseWriter, r *http.Request) {
 
-	resources, err := ResourceUsecase.GetResourcesAll(context.Background())
+	resources, err := http_usecase.resource.GetResourcesAll(context.Background())
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -143,7 +144,7 @@ func deleteResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	err := ResourceUsecase.DeleteResourceByID(context.Background(), body.ID)
+	err := http_usecase.resource.DeleteResourceByID(context.Background(), body.ID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
