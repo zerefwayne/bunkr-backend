@@ -3,8 +3,10 @@ package user
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/google/uuid"
+	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
@@ -17,6 +19,7 @@ type Usecase interface {
 	GetByUsername(ctx context.Context, username string) (*models.User, error)
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 	CreateUser(ctx context.Context, user *models.User) error
+	AddCourse(ctx context.Context, userID string, courseCode string) error
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
 }
 
@@ -25,6 +28,30 @@ type userUsecase struct {
 }
 
 var UserUsecase userUsecase
+
+func (u *userUsecase) AddCourse(ctx context.Context, userID string, courseCode string) error {
+
+	user, err := UserUsecase.GetByID(ctx, userID)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("User loaded", user)
+
+	course, err := common.Course.GetCourseByCode(ctx, courseCode)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("Course loaded", course)
+
+	err = u.userRepo.AddCourse(ctx, userID, courseCode)
+
+	return err
+
+}
 
 func (u *userUsecase) GetByID(ctx context.Context, id string) (*models.User, error) {
 
@@ -67,6 +94,7 @@ func (u *userUsecase) CreateUser(ctx context.Context, user *models.User) error {
 	}
 
 	user.Password = hash
+	user.SubscribedCourses = []string{}
 
 	u.userRepo.CreateUser(ctx, user)
 

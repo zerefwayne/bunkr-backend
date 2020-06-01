@@ -13,4 +13,5 @@ type Repository interface {
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 	CreateUser(ctx context.Context, user *models.User) error
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
+	AddCourse(ctx context.Context, userID string, courseCode string) error
 }

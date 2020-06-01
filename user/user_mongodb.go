@@ -22,6 +22,19 @@ func newMongoUserRepository(client *mongo.Client) Repository {
 	}
 }
 
+func (r *userRepository) AddCourse(ctx context.Context, userID string, courseCode string) error {
+
+	filter := bson.M{"_id": userID}
+
+	update := bson.M{"$addToSet": bson.M{"subscribedCourses": courseCode}}
+
+	collection := r.DB.Collection("user")
+
+	err := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return err.Err()
+}
+
 func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
 	filter := bson.M{"_id": id}
 

@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
+	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
 // SetUserHandlers ...
@@ -18,6 +19,12 @@ func SetUserHandlers(r *mux.Router) {
 
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/", getUserHandler)
+
+	addCourse := r.PathPrefix("/course").Subrouter()
+
+	addCourse.Use(utils.SecureRoute)
+
+	addCourse.HandleFunc("/add", addCourseHandler)
 
 }
 
@@ -53,4 +60,18 @@ func getUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+}
+
+func addCourseHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+
+	courseID := r.URL.Query().Get("courseCode")
+
+	if err := UserUsecase.AddCourse(context.Background(), userID, courseID); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond(w, "success", http.StatusOK)
 }
