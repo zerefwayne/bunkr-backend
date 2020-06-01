@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/course"
 	"github.com/zerefwayne/college-portal-backend/course/usecase"
 	"github.com/zerefwayne/college-portal-backend/models"
@@ -30,7 +31,9 @@ var http_usecase struct {
 
 func SetCourseHandlers(r *mux.Router) {
 
-	http_usecase.course = usecase.NewCourseUsecase()
+	common.Course = usecase.NewCourseUsecase()
+
+	http_usecase.course = common.Course
 
 	r.Use(utils.SecureRoute)
 

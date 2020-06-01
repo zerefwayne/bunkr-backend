@@ -5,12 +5,12 @@ import (
 	"errors"
 	"log"
 
+	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/course"
 	"github.com/zerefwayne/college-portal-backend/course/repository"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/resource"
-	"github.com/zerefwayne/college-portal-backend/resource/usecase"
 )
 
 type courseUsecase struct {
@@ -22,7 +22,7 @@ func NewCourseUsecase() course.Usecase {
 
 	return &courseUsecase{
 		courseRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
-		resource:   usecase.NewResourceUsecase(),
+		resource:   common.Resource,
 	}
 
 }

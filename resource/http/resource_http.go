@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/resource"
 	"github.com/zerefwayne/college-portal-backend/resource/usecase"
@@ -19,7 +20,9 @@ var http_usecase struct {
 
 func SetResourceHandlers(r *mux.Router) {
 
-	http_usecase.resource = usecase.NewResourceUsecase()
+	common.Resource = usecase.NewResourceUsecase()
+
+	http_usecase.resource = common.Resource
 
 	r.Use(utils.SecureRoute)
 

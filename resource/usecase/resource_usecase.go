@@ -5,7 +5,9 @@ import (
 	"time"
 
 	"github.com/rs/xid"
+	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/config"
+	"github.com/zerefwayne/college-portal-backend/course"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/resource"
 	"github.com/zerefwayne/college-portal-backend/resource/repository"
@@ -13,12 +15,14 @@ import (
 
 type resourceUsecase struct {
 	resourceRepo resource.Repository
+	course       course.Usecase
 }
 
 func NewResourceUsecase() resource.Usecase {
 
 	return &resourceUsecase{
 		resourceRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
+		course:       common.Course,
 	}
 
 }
