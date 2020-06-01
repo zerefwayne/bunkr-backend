@@ -41,7 +41,8 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.Header.Get("id")
 
 	var body struct {
-		Content string `json:"content,omitempty"`
+		Content    string `json:"content,omitempty"`
+		CourseCode string `json:"course_code,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -60,6 +61,11 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// if err := course.CourseUsecase.PushResource(context.Background(), body.CourseCode, newResource.ID); err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
 
 	w.Header().Set("Content-Type", "application/json")
 

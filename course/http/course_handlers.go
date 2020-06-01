@@ -1,4 +1,4 @@
-package course
+package http
 
 import (
 	"context"
@@ -7,7 +7,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/zerefwayne/college-portal-backend/config"
+	"github.com/zerefwayne/college-portal-backend/course"
+	"github.com/zerefwayne/college-portal-backend/course/usecase"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
@@ -23,9 +24,13 @@ func respond(w http.ResponseWriter, body interface{}, code int) {
 
 }
 
+var http_usecase struct {
+	course course.Usecase
+}
+
 func SetCourseHandlers(r *mux.Router) {
 
-	CourseUsecase.courseRepo = newMongoResourceRepository(config.C.MongoDB)
+	http_usecase.course = usecase.NewCourseUsecase()
 
 	r.Use(utils.SecureRoute)
 
@@ -58,7 +63,7 @@ func createCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("course created %+v\n", course)
 
-	if err := CourseUsecase.CreateCourse(context.Background(), &course); err != nil {
+	if err := http_usecase.course.CreateCourse(context.Background(), &course); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -75,7 +80,7 @@ func createCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 func getAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
-	courses, err := CourseUsecase.GetAllCourses(context.Background())
+	courses, err := http_usecase.course.GetAllCourses(context.Background())
 
 	if err != nil {
 		log.Println("Error while get all courses", err.Error())
@@ -97,7 +102,7 @@ func getCourseHandler(w http.ResponseWriter, r *http.Request) {
 
 	code := r.URL.Query().Get("code")
 
-	course, err := CourseUsecase.GetCourseByCode(context.Background(), code)
+	course, err := http_usecase.course.GetCourseByCode(context.Background(), code)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

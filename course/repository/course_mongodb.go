@@ -1,9 +1,11 @@
-package course
+package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/zerefwayne/college-portal-backend/config"
+	"github.com/zerefwayne/college-portal-backend/course"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,7 +16,7 @@ type courseRepository struct {
 }
 
 // NewMongoResourceRepository ...
-func newMongoResourceRepository(client *mongo.Client) Repository {
+func NewMongoResourceRepository(client *mongo.Client) course.Repository {
 	database := client.Database(config.C.Env.Database)
 
 	return &courseRepository{
@@ -69,6 +71,22 @@ func (r *courseRepository) CreateCourse(ctx context.Context, course *models.Cour
 	collection := r.DB.Collection("courses")
 
 	_, err := collection.InsertOne(ctx, course)
+
+	return err
+
+}
+
+func (r *courseRepository) UpdateCourse(ctx context.Context, course *models.Course) error {
+
+	collection := r.DB.Collection("courses")
+
+	filter := bson.M{"code": course.Code}
+
+	result := collection.FindOneAndUpdate(ctx, filter, course)
+
+	err := result.Err()
+
+	fmt.Println("updation", result.Err())
 
 	return err
 

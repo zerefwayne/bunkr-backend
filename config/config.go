@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -20,10 +18,6 @@ func Init() {
 	C = new(Config)
 
 	C.Env = LoadEnvironment()
-
-	loadCourses()
-
-	fmt.Println(Courses)
 
 	C.ConnectMongo()
 
