@@ -20,11 +20,12 @@ func SetUserHandlers(r *mux.Router) {
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/", getUserHandler)
 
-	addCourse := r.PathPrefix("/course").Subrouter()
+	course := r.PathPrefix("/course").Subrouter()
 
-	addCourse.Use(utils.SecureRoute)
+	course.Use(utils.SecureRoute)
 
-	addCourse.HandleFunc("/add", addCourseHandler)
+	course.HandleFunc("/add", addCourseHandler)
+	course.HandleFunc("/all", getCoursesHandler)
 
 }
 
@@ -59,6 +60,27 @@ func getUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+}
+
+func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+
+	courses, err := UserUsecase.GetSubscribedCourses(context.Background(), userID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var payload struct {
+		Courses []*models.Course `json:"courses,omitempty"`
+	}
+
+	payload.Courses = courses
+
+	utils.Respond(w, payload, http.StatusOK)
 
 }
 

@@ -21,6 +21,7 @@ type Usecase interface {
 	CreateUser(ctx context.Context, user *models.User) error
 	AddCourse(ctx context.Context, userID string, courseCode string) error
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
+	GetSubscribedCourses(ctx context.Context, id string) ([]*models.Course, error)
 }
 
 type userUsecase struct {
@@ -50,6 +51,34 @@ func (u *userUsecase) AddCourse(ctx context.Context, userID string, courseCode s
 	err = u.userRepo.AddCourse(ctx, userID, courseCode)
 
 	return err
+
+}
+
+func (u *userUsecase) GetSubscribedCourses(ctx context.Context, id string) ([]*models.Course, error) {
+
+	user, err := u.GetByID(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("Fetching courses for", user.Username)
+
+	var courses []*models.Course
+
+	for _, courseCode := range user.SubscribedCourses {
+
+		course, err := common.Course.GetCourseByCode(ctx, courseCode)
+
+		if err != nil {
+			return nil, err
+		}
+
+		courses = append(courses, course)
+
+	}
+
+	return courses, nil
 
 }
 
