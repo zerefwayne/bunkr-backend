@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
@@ -24,10 +25,51 @@ func respond(w http.ResponseWriter, body interface{}, code int) {
 
 func SetCourseHandlers(r *mux.Router) {
 
+	CourseUsecase.courseRepo = newMongoResourceRepository(config.C.MongoDB)
+
 	r.Use(utils.SecureRoute)
 
 	r.HandleFunc("/all", getAllCoursesHandler)
 	r.HandleFunc("/", getCourseHandler)
+	r.HandleFunc("/new", createCourseHandler)
+
+}
+
+func createCourseHandler(w http.ResponseWriter, r *http.Request) {
+
+	var body struct {
+		Slug string `json:"slug,omitempty"`
+		Name string `json:"name,omitempty"`
+		Code string `json:"code,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	defer r.Body.Close()
+
+	var course models.Course
+
+	course.Code = body.Code
+	course.Name = body.Name
+	course.Slug = body.Slug
+
+	log.Printf("course created %+v\n", course)
+
+	if err := CourseUsecase.CreateCourse(context.Background(), &course); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var payload struct {
+		Course models.Course `json:"course,omitempty"`
+	}
+
+	payload.Course = course
+
+	utils.Respond(w, payload, http.StatusOK)
 
 }
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 
-	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/resource"
 )
@@ -13,32 +12,33 @@ import (
 type Usecase interface {
 	GetAllCourses(ctx context.Context) ([]*models.Course, error)
 	GetCourseByCode(ctx context.Context, code string) (*models.Course, error)
+	CreateCourse(ctx context.Context, course *models.Course) error
 }
 
 type courseUsecase struct {
+	courseRepo Repository
 }
 
 var CourseUsecase courseUsecase
 
 func (u *courseUsecase) GetAllCourses(ctx context.Context) ([]*models.Course, error) {
-	courses := config.Courses
-	return courses, nil
+	courses, err := u.courseRepo.GetAllCourses(ctx)
+	return courses, err
+}
+
+func (u *courseUsecase) CreateCourse(ctx context.Context, course *models.Course) error {
+
+	err := u.courseRepo.CreateCourse(ctx, course)
+
+	return err
+
 }
 
 func (u *courseUsecase) GetCourseByCode(ctx context.Context, code string) (*models.Course, error) {
 
-	var course *models.Course
+	course, err := u.courseRepo.GetCourseByCode(ctx, code)
 
-	for _, c := range config.Courses {
-
-		if c.Code == code {
-			course = &models.Course{Code: c.Code, Slug: c.Slug, ResourceIDs: c.ResourceIDs, Name: c.Name}
-			break
-		}
-
-	}
-
-	if course == nil {
+	if err != nil {
 		return nil, errors.New("course not found")
 	}
 
