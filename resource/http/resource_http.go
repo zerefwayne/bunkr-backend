@@ -9,20 +9,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/models"
-	"github.com/zerefwayne/college-portal-backend/resource"
 	"github.com/zerefwayne/college-portal-backend/resource/usecase"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
-var http_usecase struct {
-	resource resource.Usecase
-}
-
 func SetResourceHandlers(r *mux.Router) {
 
 	common.Resource = usecase.NewResourceUsecase()
-
-	http_usecase.resource = common.Resource
 
 	r.Use(utils.SecureRoute)
 
@@ -46,7 +39,7 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 
 	var body struct {
 		Content    string `json:"content,omitempty"`
-		CourseCode string `json:"course_code,omitempty"`
+		CourseCode string `json:"courseCode,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -61,15 +54,15 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	newResource.Content = body.Content
 	newResource.CreatedBy = userID
 
-	if err := http_usecase.resource.CreateResource(context.Background(), newResource); err != nil {
+	if err := common.Resource.CreateResource(context.Background(), newResource); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// if err := course.CourseUsecase.PushResource(context.Background(), body.CourseCode, newResource.ID); err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
+	if err := common.Course.PushResource(context.Background(), body.CourseCode, newResource.ID); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -84,7 +77,7 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.Header.Get("id")
 
-	resources, err := http_usecase.resource.GetResourcesByUserID(context.Background(), userID)
+	resources, err := common.Resource.GetResourcesByUserID(context.Background(), userID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -110,7 +103,7 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 
 func getAllResources(w http.ResponseWriter, r *http.Request) {
 
-	resources, err := http_usecase.resource.GetResourcesAll(context.Background())
+	resources, err := common.Resource.GetResourcesAll(context.Background())
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -147,7 +140,7 @@ func deleteResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	err := http_usecase.resource.DeleteResourceByID(context.Background(), body.ID)
+	err := common.Resource.DeleteResourceByID(context.Background(), body.ID)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

@@ -13,51 +13,51 @@ import (
 	"github.com/zerefwayne/college-portal-backend/resource/repository"
 )
 
-type resourceUsecase struct {
-	resourceRepo resource.Repository
-	course       course.Usecase
+type ResourceUsecase struct {
+	ResourceRepo resource.Repository
+	Course       course.Usecase
 }
 
-func NewResourceUsecase() resource.Usecase {
+func NewResourceUsecase() *ResourceUsecase {
 
-	return &resourceUsecase{
-		resourceRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
-		course:       common.Course,
+	return &ResourceUsecase{
+		ResourceRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
+		Course:       common.Course,
 	}
 
 }
 
-func (u *resourceUsecase) CreateResource(ctx context.Context, resource *models.Resource) error {
+func (u *ResourceUsecase) CreateResource(ctx context.Context, resource *models.Resource) error {
 
 	resource.ID = xid.New().String()
 	resource.CreatedAt = time.Now()
 
-	err := u.resourceRepo.CreateResource(ctx, resource)
+	err := u.ResourceRepo.CreateResource(ctx, resource)
 
 	return err
 }
 
-func (u *resourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {
-	resources, err := u.resourceRepo.GetResourcesAll(ctx)
+func (u *ResourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {
+	resources, err := u.ResourceRepo.GetResourcesAll(ctx)
 
 	return resources, err
 }
 
-func (u *resourceUsecase) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {
-	resource, err := u.resourceRepo.GetResourceByID(ctx, id)
+func (u *ResourceUsecase) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {
+	resource, err := u.ResourceRepo.GetResourceByID(ctx, id)
 	return resource, err
 }
 
-func (u *resourceUsecase) GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error) {
+func (u *ResourceUsecase) GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error) {
 
-	resources, err := u.resourceRepo.GetResourcesByUserID(ctx, id)
+	resources, err := u.ResourceRepo.GetResourcesByUserID(ctx, id)
 
 	return resources, err
 }
 
-func (u *resourceUsecase) DeleteResourceByID(ctx context.Context, id string) error {
+func (u *ResourceUsecase) DeleteResourceByID(ctx context.Context, id string) error {
 
-	err := u.resourceRepo.DeleteResourceByID(ctx, id)
+	err := u.ResourceRepo.DeleteResourceByID(ctx, id)
 
 	return err
 

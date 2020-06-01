@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	"github.com/zerefwayne/college-portal-backend/common"
@@ -10,26 +11,19 @@ import (
 	"github.com/zerefwayne/college-portal-backend/course"
 	"github.com/zerefwayne/college-portal-backend/course/repository"
 	"github.com/zerefwayne/college-portal-backend/models"
-	"github.com/zerefwayne/college-portal-backend/resource"
 )
 
-type courseUsecase struct {
-	courseRepo course.Repository
-	resource   resource.Usecase
+type CourseUsecase struct {
+	CourseRepo course.Repository
 }
 
-func NewCourseUsecase() course.Usecase {
-
-	return &courseUsecase{
-		courseRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
-		resource:   common.Resource,
+func NewCourseUsecase() *CourseUsecase {
+	return &CourseUsecase{
+		CourseRepo: repository.NewMongoResourceRepository(config.C.MongoDB),
 	}
-
 }
 
-var CourseUsecase courseUsecase
-
-func (u *courseUsecase) PushResource(ctx context.Context, courseCode string, resourceID string) error {
+func (u *CourseUsecase) PushResource(ctx context.Context, courseCode string, resourceID string) error {
 
 	course, err := u.GetCourseByCode(ctx, courseCode)
 
@@ -37,9 +31,9 @@ func (u *courseUsecase) PushResource(ctx context.Context, courseCode string, res
 		return err
 	}
 
-	course.ResourceIDs = append(course.ResourceIDs, resourceID)
+	fmt.Println(course)
 
-	if err := u.UpdateCourse(ctx, course); err != nil {
+	if err := u.CourseRepo.PushResource(ctx, course.Code, resourceID); err != nil {
 		return err
 	}
 
@@ -47,30 +41,22 @@ func (u *courseUsecase) PushResource(ctx context.Context, courseCode string, res
 
 }
 
-func (u *courseUsecase) UpdateCourse(ctx context.Context, course *models.Course) error {
-
-	err := u.courseRepo.UpdateCourse(ctx, course)
-
-	return err
-
-}
-
-func (u *courseUsecase) GetAllCourses(ctx context.Context) ([]*models.Course, error) {
-	courses, err := u.courseRepo.GetAllCourses(ctx)
+func (u *CourseUsecase) GetAllCourses(ctx context.Context) ([]*models.Course, error) {
+	courses, err := u.CourseRepo.GetAllCourses(ctx)
 	return courses, err
 }
 
-func (u *courseUsecase) CreateCourse(ctx context.Context, course *models.Course) error {
+func (u *CourseUsecase) CreateCourse(ctx context.Context, course *models.Course) error {
 
-	err := u.courseRepo.CreateCourse(ctx, course)
+	err := u.CourseRepo.CreateCourse(ctx, course)
 
 	return err
 
 }
 
-func (u *courseUsecase) GetCourseByCode(ctx context.Context, code string) (*models.Course, error) {
+func (u *CourseUsecase) GetCourseByCode(ctx context.Context, code string) (*models.Course, error) {
 
-	course, err := u.courseRepo.GetCourseByCode(ctx, code)
+	course, err := u.CourseRepo.GetCourseByCode(ctx, code)
 
 	if err != nil {
 		return nil, errors.New("course not found")
@@ -80,7 +66,7 @@ func (u *courseUsecase) GetCourseByCode(ctx context.Context, code string) (*mode
 
 		log.Println(resourceID)
 
-		resource, err := u.resource.GetResourceByID(ctx, resourceID)
+		resource, err := common.Resource.GetResourceByID(ctx, resourceID)
 
 		if err != nil {
 			return nil, err

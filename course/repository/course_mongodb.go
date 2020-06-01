@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/zerefwayne/college-portal-backend/config"
 	"github.com/zerefwayne/college-portal-backend/course"
@@ -76,18 +75,16 @@ func (r *courseRepository) CreateCourse(ctx context.Context, course *models.Cour
 
 }
 
-func (r *courseRepository) UpdateCourse(ctx context.Context, course *models.Course) error {
+func (r *courseRepository) PushResource(ctx context.Context, courseCode string, resourceID string) error {
 
 	collection := r.DB.Collection("courses")
 
-	filter := bson.M{"code": course.Code}
+	filter := bson.M{"code": courseCode}
 
-	result := collection.FindOneAndUpdate(ctx, filter, course)
+	update := bson.M{"$addToSet": bson.M{"resource_ids": resourceID}}
 
-	err := result.Err()
+	result := collection.FindOneAndUpdate(ctx, filter, update)
 
-	fmt.Println("updation", result.Err())
-
-	return err
+	return result.Err()
 
 }

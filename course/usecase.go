@@ -11,5 +11,4 @@ type Usecase interface {
 	GetCourseByCode(ctx context.Context, code string) (*models.Course, error)
 	CreateCourse(ctx context.Context, course *models.Course) error
 	PushResource(ctx context.Context, courseCode string, resourceID string) error
-	UpdateCourse(ctx context.Context, course *models.Course) error
 }
