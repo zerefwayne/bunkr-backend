@@ -65,6 +65,20 @@ func (r *courseRepository) GetCourseByCode(ctx context.Context, code string) (*m
 	return &course, err
 }
 
+func (r *courseRepository) GetCourseBySlug(ctx context.Context, slug string) (*models.Course, error) {
+
+	var course models.Course
+
+	filter := bson.M{"slug": slug}
+
+	collection := r.DB.Collection("courses")
+
+	err := collection.FindOne(ctx, filter).Decode(&course)
+
+	return &course, err
+
+}
+
 func (r *courseRepository) CreateCourse(ctx context.Context, course *models.Course) error {
 
 	collection := r.DB.Collection("courses")

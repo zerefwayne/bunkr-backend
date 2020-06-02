@@ -98,9 +98,9 @@ func getAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
 func getCourseHandler(w http.ResponseWriter, r *http.Request) {
 
-	code := r.URL.Query().Get("code")
+	slug := r.URL.Query().Get("slug")
 
-	course, err := common.Course.GetCourseByCode(context.Background(), code)
+	course, err := common.Course.GetCourseBySlug(context.Background(), slug)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
