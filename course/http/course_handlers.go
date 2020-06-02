@@ -92,6 +92,10 @@ func getAllCoursesHandler(w http.ResponseWriter, r *http.Request) {
 
 	payload.Courses = courses
 
+	if len(payload.Courses) == 0 {
+		payload.Courses = []*models.Course{}
+	}
+
 	respond(w, payload, http.StatusOK)
 
 }
