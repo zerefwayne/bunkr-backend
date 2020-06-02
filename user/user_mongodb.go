@@ -35,6 +35,19 @@ func (r *userRepository) AddCourse(ctx context.Context, userID string, courseCod
 	return err.Err()
 }
 
+func (r *userRepository) RemoveCourse(ctx context.Context, userID string, courseCode string) error {
+
+	filter := bson.M{"_id": userID}
+
+	update := bson.M{"$pull": bson.M{"subscribedCourses": courseCode}}
+
+	collection := r.DB.Collection("user")
+
+	err := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return err.Err()
+}
+
 func (r *userRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
 	filter := bson.M{"_id": id}
 

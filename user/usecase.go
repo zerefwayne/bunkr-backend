@@ -20,6 +20,7 @@ type Usecase interface {
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 	CreateUser(ctx context.Context, user *models.User) error
 	AddCourse(ctx context.Context, userID string, courseCode string) error
+	RemoveCourse(ctx context.Context, userID string, courseCode string) error
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
 	GetSubscribedCourses(ctx context.Context, id string) ([]*models.Course, error)
 }
@@ -49,6 +50,30 @@ func (u *userUsecase) AddCourse(ctx context.Context, userID string, courseCode s
 	log.Println("Course loaded", course)
 
 	err = u.userRepo.AddCourse(ctx, userID, courseCode)
+
+	return err
+
+}
+
+func (u *userUsecase) RemoveCourse(ctx context.Context, userID string, courseCode string) error {
+
+	user, err := UserUsecase.GetByID(ctx, userID)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("User loaded", user)
+
+	course, err := common.Course.GetCourseByCode(ctx, courseCode)
+
+	if err != nil {
+		return err
+	}
+
+	log.Println("Course loaded", course)
+
+	err = u.userRepo.RemoveCourse(ctx, userID, courseCode)
 
 	return err
 

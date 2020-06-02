@@ -25,6 +25,7 @@ func SetUserHandlers(r *mux.Router) {
 	course.Use(utils.SecureRoute)
 
 	course.HandleFunc("/add", addCourseHandler)
+	course.HandleFunc("/remove", removeCourseHandler)
 	course.HandleFunc("/all", getCoursesHandler)
 
 }
@@ -75,10 +76,14 @@ func getCoursesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload struct {
-		Courses []*models.Course `json:"courses,omitempty"`
+		Courses []*models.Course `json:"courses"`
 	}
 
 	payload.Courses = courses
+
+	if len(courses) == 0 {
+		payload.Courses = []*models.Course{}
+	}
 
 	utils.Respond(w, payload, http.StatusOK)
 
@@ -91,6 +96,20 @@ func addCourseHandler(w http.ResponseWriter, r *http.Request) {
 	courseID := r.URL.Query().Get("courseCode")
 
 	if err := UserUsecase.AddCourse(context.Background(), userID, courseID); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond(w, "success", http.StatusOK)
+}
+
+func removeCourseHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+
+	courseID := r.URL.Query().Get("courseCode")
+
+	if err := UserUsecase.RemoveCourse(context.Background(), userID, courseID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

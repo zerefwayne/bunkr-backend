@@ -14,4 +14,5 @@ type Repository interface {
 	CreateUser(ctx context.Context, user *models.User) error
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
 	AddCourse(ctx context.Context, userID string, courseCode string) error
+	RemoveCourse(ctx context.Context, userID string, courseCode string) error
 }
