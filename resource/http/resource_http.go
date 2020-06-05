@@ -38,8 +38,11 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.Header.Get("id")
 
 	var body struct {
-		Content    string `json:"content,omitempty"`
-		CourseCode string `json:"courseCode,omitempty"`
+		Content    string   `json:"content,omitempty"`
+		CourseCode string   `json:"courseCode,omitempty"`
+		Type       string   `json:"type,omitempty"`
+		Title      string   `json:"title,omitempty"`
+		Tags       []string `json:"tags,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -53,6 +56,9 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 
 	newResource.Content = body.Content
 	newResource.CreatedBy = userID
+	newResource.Type = body.Type
+	newResource.Title = body.Title
+	newResource.Tags = body.Tags
 
 	if err := common.Resource.CreateResource(context.Background(), newResource); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
