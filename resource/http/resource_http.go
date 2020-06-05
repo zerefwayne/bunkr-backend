@@ -21,6 +21,7 @@ func SetResourceHandlers(r *mux.Router) {
 
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/create", createResourceHandler)
+	r.HandleFunc("/", getResourceHandler)
 	r.HandleFunc("/user", getUserResources)
 	r.HandleFunc("/all", getAllResources)
 	r.HandleFunc("/delete", deleteResourceByIDHandler)
@@ -30,6 +31,27 @@ func SetResourceHandlers(r *mux.Router) {
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Hello from resource!")
+
+}
+
+func getResourceHandler(w http.ResponseWriter, r *http.Request) {
+
+	id := r.URL.Query().Get("id")
+
+	resource, err := common.Resource.GetResourceByID(context.Background(), id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var payload struct {
+		Resource *models.Resource `json:"resource,omitempty"`
+	}
+
+	payload.Resource = resource
+
+	utils.Respond(w, payload, http.StatusOK)
 
 }
 
