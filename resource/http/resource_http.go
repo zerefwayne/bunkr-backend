@@ -10,6 +10,7 @@ import (
 	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/resource/usecase"
+	"github.com/zerefwayne/college-portal-backend/user"
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
@@ -45,11 +46,20 @@ func getResourceHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := user.UserUsecase.GetByID(context.Background(), resource.CreatedBy)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
 	var payload struct {
 		Resource *models.Resource `json:"resource,omitempty"`
+		User     *models.User     `json:"user,omitempty"`
 	}
 
 	payload.Resource = resource
+	payload.User = user
 
 	utils.Respond(w, payload, http.StatusOK)
 
