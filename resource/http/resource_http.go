@@ -153,6 +153,10 @@ func getUserResources(w http.ResponseWriter, r *http.Request) {
 	response.Length = len(resources)
 	response.Resources = resources
 
+	if len(resources) == 0 {
+		response.Resources = []*models.Resource{}
+	}
+
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

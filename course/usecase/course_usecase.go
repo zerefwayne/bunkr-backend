@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/config"
@@ -64,8 +63,6 @@ func (u *CourseUsecase) GetCourseByCode(ctx context.Context, code string) (*mode
 
 	for _, resourceID := range course.ResourceIDs {
 
-		log.Println(resourceID)
-
 		resource, err := common.Resource.GetResourceByID(ctx, resourceID)
 
 		if err != nil {
@@ -93,8 +90,6 @@ func (u *CourseUsecase) GetCourseBySlug(ctx context.Context, slug string) (*mode
 
 	for _, resourceID := range course.ResourceIDs {
 
-		log.Println(resourceID)
-
 		resource, err := common.Resource.GetResourceByID(ctx, resourceID)
 
 		if err != nil {
@@ -102,7 +97,6 @@ func (u *CourseUsecase) GetCourseBySlug(ctx context.Context, slug string) (*mode
 		}
 
 		if resource.IsApproved {
-
 			course.Resources = append(course.Resources, resource)
 		}
 
