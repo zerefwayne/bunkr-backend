@@ -48,6 +48,11 @@ func (u *ResourceUsecase) GetResourceByID(ctx context.Context, id string) (*mode
 	return resource, err
 }
 
+func (u *ResourceUsecase) GetPendingResources(ctx context.Context) ([]*models.Resource, error) {
+	resource, err := u.ResourceRepo.GetPendingResources(ctx)
+	return resource, err
+}
+
 func (u *ResourceUsecase) GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error) {
 
 	resources, err := u.ResourceRepo.GetResourcesByUserID(ctx, id)
@@ -58,6 +63,14 @@ func (u *ResourceUsecase) GetResourcesByUserID(ctx context.Context, id string) (
 func (u *ResourceUsecase) DeleteResourceByID(ctx context.Context, id string) error {
 
 	err := u.ResourceRepo.DeleteResourceByID(ctx, id)
+
+	return err
+
+}
+
+func (u *ResourceUsecase) ApproveResourceByID(ctx context.Context, id string) error {
+
+	err := u.ResourceRepo.ApproveResourceByID(ctx, id)
 
 	return err
 

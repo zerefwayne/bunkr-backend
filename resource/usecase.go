@@ -10,7 +10,9 @@ import (
 type Usecase interface {
 	CreateResource(ctx context.Context, resource *models.Resource) error
 	GetResourcesAll(ctx context.Context) ([]*models.Resource, error)
+	GetPendingResources(ctx context.Context) ([]*models.Resource, error)
 	GetResourceByID(ctx context.Context, id string) (*models.Resource, error)
 	GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error)
 	DeleteResourceByID(ctx context.Context, id string) error
+	ApproveResourceByID(ctx context.Context, id string) error
 }

@@ -76,6 +76,10 @@ func (u *CourseUsecase) GetCourseByCode(ctx context.Context, code string) (*mode
 
 	}
 
+	if len(course.Resources) == 0 {
+		course.Resources = []*models.Resource{}
+	}
+
 	return course, nil
 }
 
@@ -97,7 +101,10 @@ func (u *CourseUsecase) GetCourseBySlug(ctx context.Context, slug string) (*mode
 			return nil, err
 		}
 
-		course.Resources = append(course.Resources, resource)
+		if resource.IsApproved {
+
+			course.Resources = append(course.Resources, resource)
+		}
 
 	}
 

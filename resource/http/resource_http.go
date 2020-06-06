@@ -26,12 +26,33 @@ func SetResourceHandlers(r *mux.Router) {
 	r.HandleFunc("/user", getUserResources)
 	r.HandleFunc("/all", getAllResources)
 	r.HandleFunc("/delete", deleteResourceByIDHandler)
+	r.HandleFunc("/pending", pendingResourceHandler)
+	r.HandleFunc("/approve", approveResourceByIDHandler)
 
 }
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Hello from resource!")
+
+}
+
+func pendingResourceHandler(w http.ResponseWriter, r *http.Request) {
+
+	resources, err := common.Resource.GetPendingResources(context.Background())
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var payload struct {
+		Resources []*models.Resource `json:"resources"`
+	}
+
+	payload.Resources = resources
+
+	utils.Respond(w, payload, http.StatusOK)
 
 }
 
@@ -186,5 +207,35 @@ func deleteResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "delete success %s", body.ID)
+
+}
+
+func approveResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
+
+	var body struct {
+		ID string `json:"id,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	defer r.Body.Close()
+
+	err := common.Resource.ApproveResourceByID(context.Background(), body.ID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var payload struct {
+		Success bool `json:"success,omitempty"`
+	}
+
+	payload.Success = true
+
+	utils.Respond(w, payload, http.StatusOK)
 
 }
