@@ -7,5 +7,6 @@ type User struct {
 	Name              string   `json:"name" bson:"name"`
 	Password          string   `json:"password,omitempty" bson:"password"`
 	Email             string   `json:"email" bson:"email"`
+	IsAdmin           bool     `json:"isAdmin" bson:"isAdmin"`
 	SubscribedCourses []string `json:"subscribedCourses" bson:"subscribedCourses"`
 }
