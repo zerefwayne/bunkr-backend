@@ -30,12 +30,14 @@ func (me *MongoDBEnv) load() {
 }
 
 type APIEnv struct {
+	APIPort    string
 	Port       string
 	SigningKey string
 }
 
 func (a *APIEnv) load() {
-	a.Port = os.Getenv("API_PORT")
+	a.APIPort = os.Getenv("API_PORT")
+	a.Port = os.Getenv("PORT")
 	a.SigningKey = os.Getenv("API_SIGNING_KEY")
 }
 

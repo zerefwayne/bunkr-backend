@@ -40,8 +40,14 @@ func CORSHandler() http.Handler {
 }
 
 func getPort() string {
-	port := config.C.Env.APIEnv.Port
+
+	if config.C.Env.APIEnv.Port != "" {
+		return ":" + config.C.Env.APIEnv.Port
+	}
+
+	port := config.C.Env.APIEnv.APIPort
 	return ":" + port
+
 }
 
 func Serve() {
