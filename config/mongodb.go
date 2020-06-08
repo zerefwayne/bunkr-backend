@@ -16,14 +16,15 @@ func (c *Config) ConnectMongo() {
 
 	host := c.Env.MongoDBEnv.Host
 	port := c.Env.MongoDBEnv.Port
-	user := c.Env.MongoDBEnv.User
-	password := c.Env.MongoDBEnv.Password
-	srvMode := c.Env.MongoDBEnv.SRV
+	// user := c.Env.MongoDBEnv.User
+	// password := c.Env.MongoDBEnv.Password
+	// srvMode := c.Env.MongoDBEnv.SRV
+	url := c.Env.MongoDBEnv.URL
 
 	mongoURI := ""
 
-	if srvMode == "true" {
-		mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@%s", user, password, host)
+	if url != "" {
+		mongoURI = url
 	} else {
 		mongoURI = fmt.Sprintf("mongodb://%s:%s", host, port)
 	}

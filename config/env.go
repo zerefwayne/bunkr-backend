@@ -9,6 +9,7 @@ import (
 
 // MongoDBEnv Loads MongoDB Environment Variables
 type MongoDBEnv struct {
+	URL      string
 	Host     string
 	Port     string
 	Database string
@@ -25,6 +26,7 @@ func (me *MongoDBEnv) load() {
 	me.User = os.Getenv("MONGODB_USER")
 	me.Password = os.Getenv("MONGODB_PASSWORD")
 	me.SRV = os.Getenv("MONGODB_SRV")
+	me.URL = os.Getenv("MONGODB_URL")
 }
 
 type APIEnv struct {
