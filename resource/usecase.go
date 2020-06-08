@@ -9,6 +9,7 @@ import (
 // Usecase defines usecase interface for Resource
 type Usecase interface {
 	CreateResource(ctx context.Context, resource *models.Resource) error
+	UpdateResource(ctx context.Context, resource *models.Resource) error
 	GetResourcesAll(ctx context.Context) ([]*models.Resource, error)
 	GetPendingResources(ctx context.Context) ([]*models.Resource, error)
 	GetResourceByID(ctx context.Context, id string) (*models.Resource, error)

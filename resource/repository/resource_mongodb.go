@@ -34,6 +34,19 @@ func (r *resourceRepository) CreateResource(ctx context.Context, resource *model
 	return err
 }
 
+func (r *resourceRepository) UpdateResource(ctx context.Context, resource *models.Resource) error {
+
+	filter := bson.M{"_id": resource.ID}
+
+	update := bson.M{"$set": bson.M{"title": resource.Title, "type": resource.Type, "content": resource.Content}}
+
+	collection := r.DB.Collection("resources")
+
+	err := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return err.Err()
+}
+
 func (r *resourceRepository) GetPendingResources(ctx context.Context) ([]*models.Resource, error) {
 	collection := r.DB.Collection("resources")
 

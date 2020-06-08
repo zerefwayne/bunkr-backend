@@ -15,4 +15,5 @@ type Repository interface {
 	GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error)
 	DeleteResourceByID(ctx context.Context, id string) error
 	ApproveResourceByID(ctx context.Context, id string) error
+	UpdateResource(ctx context.Context, resource *models.Resource) error
 }

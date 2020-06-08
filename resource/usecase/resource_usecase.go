@@ -37,6 +37,11 @@ func (u *ResourceUsecase) CreateResource(ctx context.Context, resource *models.R
 	return err
 }
 
+func (u *ResourceUsecase) UpdateResource(ctx context.Context, resource *models.Resource) error {
+	err := u.ResourceRepo.UpdateResource(ctx, resource)
+	return err
+}
+
 func (u *ResourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resource, error) {
 	resources, err := u.ResourceRepo.GetResourcesAll(ctx)
 

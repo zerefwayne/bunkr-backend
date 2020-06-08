@@ -22,6 +22,7 @@ func SetResourceHandlers(r *mux.Router) {
 
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/create", createResourceHandler)
+	r.HandleFunc("/update", updateResourceHandler)
 	r.HandleFunc("/", getResourceHandler)
 	r.HandleFunc("/user", getUserResources)
 	r.HandleFunc("/all", getAllResources)
@@ -126,6 +127,38 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := json.NewEncoder(w).Encode(newResource); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+}
+
+func updateResourceHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+
+	var updated *models.Resource
+
+	if err := json.NewDecoder(r.Body).Decode(&updated); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	defer r.Body.Close()
+
+	if updated.CreatedBy != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if err := common.Resource.UpdateResource(context.Background(), updated); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(updated); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
