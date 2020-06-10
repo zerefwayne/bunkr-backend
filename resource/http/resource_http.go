@@ -152,15 +152,16 @@ func createResourceHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	newResource := new(models.Resource)
+	var newResource models.Resource
 
 	newResource.Content = body.Content
 	newResource.CreatedBy = userID
 	newResource.Type = body.Type
 	newResource.Title = body.Title
 	newResource.Tags = body.Tags
+	newResource.Upvotes = []string{}
 
-	if err := common.Resource.CreateResource(context.Background(), newResource); err != nil {
+	if err := common.Resource.CreateResource(context.Background(), &newResource); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
