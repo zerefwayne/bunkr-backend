@@ -12,6 +12,7 @@ type Resource struct {
 	CreatedAt  time.Time `json:"created_at" bson:"created_at"`
 	CreatedBy  string    `json:"created_by" bson:"created_by"`
 	IsApproved bool      `json:"is_approved" bson:"is_approved"`
+	Upvotes    []string  `json:"upvotes" bson:"upvotes"`
 }
 
 // Allowed values for type: link, article, file

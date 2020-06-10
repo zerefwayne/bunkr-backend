@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/zerefwayne/college-portal-backend/common"
 	"github.com/zerefwayne/college-portal-backend/config"
@@ -76,7 +77,7 @@ func (u *CourseUsecase) GetCourseByCode(ctx context.Context, code string) (*mode
 		resource, err := common.Resource.GetResourceByID(ctx, resourceID)
 
 		if err != nil {
-			return nil, err
+			log.Println("fetching resource", resourceID, err.Error())
 		}
 
 		course.Resources = append(course.Resources, resource)

@@ -16,4 +16,6 @@ type Usecase interface {
 	GetResourcesByUserID(ctx context.Context, id string) ([]*models.Resource, error)
 	DeleteResourceByID(ctx context.Context, id string) error
 	ApproveResourceByID(ctx context.Context, id string) error
+	AddVoteResource(ctx context.Context, resourceID string, userID string) error
+	UpdateVoteResource(ctx context.Context, resourceID string, userID string) error
 }

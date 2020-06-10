@@ -48,6 +48,22 @@ func (u *ResourceUsecase) GetResourcesAll(ctx context.Context) ([]*models.Resour
 	return resources, err
 }
 
+func (u *ResourceUsecase) AddVoteResource(ctx context.Context, resourceID string, userID string) error {
+
+	err := u.ResourceRepo.AddVoteResource(ctx, resourceID, userID)
+
+	return err
+
+}
+
+func (u *ResourceUsecase) UpdateVoteResource(ctx context.Context, resourceID string, userID string) error {
+
+	err := u.ResourceRepo.UpdateVoteResource(ctx, resourceID, userID)
+
+	return err
+
+}
+
 func (u *ResourceUsecase) GetResourceByID(ctx context.Context, id string) (*models.Resource, error) {
 	resource, err := u.ResourceRepo.GetResourceByID(ctx, id)
 	return resource, err

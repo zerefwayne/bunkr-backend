@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -29,12 +30,57 @@ func SetResourceHandlers(r *mux.Router) {
 	r.HandleFunc("/delete", deleteResourceByIDHandler)
 	r.HandleFunc("/pending", pendingResourceHandler)
 	r.HandleFunc("/approve", approveResourceByIDHandler)
+	r.HandleFunc("/add-vote", addVoteHandler)
+	r.HandleFunc("/update-vote", updateVoteHandler)
 
 }
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Hello from resource!")
+
+}
+
+func addVoteHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+	resourceID := r.URL.Query().Get("resourceID")
+
+	if userID == "" || resourceID == "" {
+		log.Println(userID, resourceID)
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	err := common.Resource.AddVoteResource(context.Background(), resourceID, userID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond(w, "Successful!", http.StatusOK)
+
+}
+
+func updateVoteHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+	resourceID := r.URL.Query().Get("resourceID")
+
+	if userID == "" || resourceID == "" {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	err := common.Resource.UpdateVoteResource(context.Background(), resourceID, userID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond(w, "Successful!", http.StatusOK)
 
 }
 

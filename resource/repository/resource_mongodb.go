@@ -25,6 +25,34 @@ func NewMongoResourceRepository(client *mongo.Client) resource.Repository {
 	}
 }
 
+func (r *resourceRepository) AddVoteResource(ctx context.Context, resourceID string, userID string) error {
+
+	collection := r.DB.Collection("resources")
+
+	filter := bson.M{"_id": resourceID}
+
+	update := bson.M{"$addToSet": bson.M{"upvotes": userID}}
+
+	result := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return result.Err()
+
+}
+
+func (r *resourceRepository) UpdateVoteResource(ctx context.Context, resourceID string, userID string) error {
+
+	collection := r.DB.Collection("resources")
+
+	filter := bson.M{"_id": resourceID}
+
+	update := bson.M{"$pull": bson.M{"upvotes": userID}}
+
+	result := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return result.Err()
+
+}
+
 func (r *resourceRepository) CreateResource(ctx context.Context, resource *models.Resource) error {
 
 	collection := r.DB.Collection("resources")
@@ -118,6 +146,10 @@ func (r *resourceRepository) GetResourceByID(ctx context.Context, id string) (*m
 	if err != nil {
 
 		return nil, err
+	}
+
+	if len(resource.Upvotes) == 0 {
+		resource.Upvotes = []string{}
 	}
 
 	return &resource, nil

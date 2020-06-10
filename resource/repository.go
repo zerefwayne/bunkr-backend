@@ -16,4 +16,6 @@ type Repository interface {
 	DeleteResourceByID(ctx context.Context, id string) error
 	ApproveResourceByID(ctx context.Context, id string) error
 	UpdateResource(ctx context.Context, resource *models.Resource) error
+	AddVoteResource(ctx context.Context, resourceID string, userID string) error
+	UpdateVoteResource(ctx context.Context, resourceID string, userID string) error
 }
