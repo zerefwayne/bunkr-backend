@@ -40,6 +40,16 @@ func (u *CourseUsecase) PushResource(ctx context.Context, courseCode string, res
 
 }
 
+func (u *CourseUsecase) PopResource(ctx context.Context, resourceID string) error {
+
+	if err := u.CourseRepo.PopResource(ctx, resourceID); err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 func (u *CourseUsecase) GetAllCourses(ctx context.Context) ([]*models.Course, error) {
 	courses, err := u.CourseRepo.GetAllCourses(ctx)
 	return courses, err

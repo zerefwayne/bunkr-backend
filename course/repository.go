@@ -12,4 +12,5 @@ type Repository interface {
 	GetCourseBySlug(ctx context.Context, slug string) (*models.Course, error)
 	CreateCourse(ctx context.Context, course *models.Course) error
 	PushResource(ctx context.Context, courseCode string, resourceID string) error
+	PopResource(ctx context.Context, resourceID string) error
 }

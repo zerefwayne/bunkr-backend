@@ -102,3 +102,17 @@ func (r *courseRepository) PushResource(ctx context.Context, courseCode string, 
 	return result.Err()
 
 }
+
+func (r *courseRepository) PopResource(ctx context.Context, resourceID string) error {
+
+	collection := r.DB.Collection("courses")
+
+	filter := bson.M{}
+
+	update := bson.M{"$pull": bson.M{"resource_ids": resourceID}}
+
+	_, err := collection.UpdateMany(ctx, filter, update)
+
+	return err
+
+}

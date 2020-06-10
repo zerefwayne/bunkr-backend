@@ -226,7 +226,7 @@ func getAllResources(w http.ResponseWriter, r *http.Request) {
 func deleteResourceByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	var body struct {
-		ID string `json:"id,omitempty"`
+		ID string `json:"resourceID,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

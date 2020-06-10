@@ -69,6 +69,12 @@ func (u *ResourceUsecase) DeleteResourceByID(ctx context.Context, id string) err
 
 	err := u.ResourceRepo.DeleteResourceByID(ctx, id)
 
+	if err != nil {
+		return err
+	}
+
+	err = common.Course.PopResource(ctx, id)
+
 	return err
 
 }
