@@ -14,12 +14,18 @@ import (
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
+// NewRouter defines a mux router and attaches all the routes from various packages.
+// Returns a fully configured mux router.
 func NewRouter() *mux.Router {
 
 	router := mux.NewRouter()
 
+	// Makes it compulsory to NOT include a slash after a route URL.
 	router.StrictSlash(true)
+	// Calls the Logger middleware for every route.
 	router.Use(utils.Logger)
+
+	// Attach routes from packages
 
 	user.SetUserHandlers(router.PathPrefix("/api/user").Subrouter())
 	resource_http.SetResourceHandlers(router.PathPrefix("/api/resource").Subrouter())
@@ -29,17 +35,23 @@ func NewRouter() *mux.Router {
 	return router
 }
 
+// CORSHandler creates a new mux router and allows CORS from all sources
 func CORSHandler() http.Handler {
 
+	// router is a fully configured mux Router
 	router := NewRouter()
 
+	// attaches AllowAll course policies to router
 	corsHandler := cors.AllowAll().Handler(router)
 
 	return corsHandler
 
 }
 
+// getPort generates a port from environment variables.
 func getPort() string {
+
+	// Env variable PORT overrides the normal APIPort if available
 
 	if config.C.Env.APIEnv.Port != "" {
 		return ":" + config.C.Env.APIEnv.Port
@@ -50,6 +62,7 @@ func getPort() string {
 
 }
 
+// Serve starts the REST API on the port
 func Serve() {
 
 	handler := CORSHandler()

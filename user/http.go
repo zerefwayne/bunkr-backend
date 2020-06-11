@@ -59,6 +59,10 @@ func getBookmarksHandler(w http.ResponseWriter, r *http.Request) {
 		Bookmarks []string `json:"bookmarks,omitempty"`
 	}
 
+	if len(bookmarks) == 0 {
+		bookmarks = []string{}
+	}
+
 	payload.Bookmarks = bookmarks
 
 	utils.Respond(w, payload, http.StatusOK)
