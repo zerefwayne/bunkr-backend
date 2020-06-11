@@ -13,38 +13,31 @@ import (
 	"github.com/zerefwayne/college-portal-backend/utils"
 )
 
-type signUpBody struct {
-	Username string `json:"username"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-}
-
-type loginBody struct {
-	Email    string `json:"email,omitempty"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-}
-
-// SetAuthHandlers ...
+// SetAuthHandlers sets authentication routes after /api/auth
 func SetAuthHandlers(r *mux.Router) {
 
 	r.HandleFunc("/login", loginHandler)
 	r.HandleFunc("/logout", logoutHandler)
 	r.HandleFunc("/signup", signUpHandler)
 
+	// /validate is a secured route hence we create a seperate subrouter to attach middleware.
 	validate := r.PathPrefix("/validate").Subrouter()
 
+	// attaches secureRoute middleware to /api/auth/validate
 	validate.Use(utils.SecureRoute)
 
 	validate.HandleFunc("/", validateHandler)
 
 }
 
+// validateHandler GET /api/auth/validate
+// Returns user object if found
 func validateHandler(w http.ResponseWriter, r *http.Request) {
 
+	// extracts userID from Header
 	id := r.Header.Get("id")
 
+	// Gets user from user usecase
 	user, err := user.UserUsecase.GetByID(context.Background(), id)
 
 	if err != nil {
@@ -53,30 +46,26 @@ func validateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// User exists in we will send updated user
+
 	var payload struct {
 		User *models.User `json:"user"`
 	}
 
 	payload.User = user
 
-	respond(w, payload, http.StatusOK)
+	utils.Respond(w, payload, http.StatusOK)
 
 }
 
-func respond(w http.ResponseWriter, body interface{}, code int) {
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-
-	if err := json.NewEncoder(w).Encode(body); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-}
-
+// loginHandler POST /api/auth/login
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 
-	var body loginBody
+	var body struct {
+		Email    string `json:"email,omitempty"`
+		Username string `json:"username,omitempty"`
+		Password string `json:"password,omitempty"`
+	}
 
 	var loginResponse struct {
 		Success bool         `json:"success"`
@@ -90,7 +79,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		loginResponse.Success = false
 		loginResponse.Error = err.Error()
 
-		respond(w, loginResponse, http.StatusInternalServerError)
+		utils.Respond(w, loginResponse, http.StatusInternalServerError)
 		return
 
 	}
@@ -99,6 +88,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var userX *models.User
 	var err error
+
+	// The login response can contain either mail aur username
 
 	if len(body.Email) > 0 {
 		userX, err = user.UserUsecase.GetByEmail(context.Background(), body.Email)
@@ -111,7 +102,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		loginResponse.Success = false
 		loginResponse.Error = "user not found"
 
-		respond(w, loginResponse, http.StatusUnauthorized)
+		utils.Respond(w, loginResponse, http.StatusUnauthorized)
 		return
 
 	}
@@ -120,27 +111,30 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		loginResponse.Success = false
 		loginResponse.Error = "user not found"
 
-		respond(w, loginResponse, http.StatusUnauthorized)
+		utils.Respond(w, loginResponse, http.StatusUnauthorized)
 		return
 	}
 
+	// checks if password is valid
 	if err := utils.CompareHashAndPassword(body.Password, userX.Password); err != nil {
 		loginResponse.Success = false
 		loginResponse.Error = "incorrect password"
 
-		respond(w, loginResponse, http.StatusUnauthorized)
+		utils.Respond(w, loginResponse, http.StatusUnauthorized)
 		return
 	}
 
+	// unsets user password so it doesn't go in JSON response
 	userX.Password = ""
 
+	// generates a JWT Token for the user
 	jwtToken, err := utils.GenerateJWTString(userX)
 
 	if err != nil {
 		loginResponse.Success = false
 		loginResponse.Error = "error in jwt creation"
 
-		respond(w, loginResponse, http.StatusInternalServerError)
+		utils.Respond(w, loginResponse, http.StatusInternalServerError)
 		return
 	}
 
@@ -149,17 +143,25 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	loginResponse.User = userX
 	loginResponse.Token = jwtToken
 
-	respond(w, loginResponse, http.StatusOK)
+	utils.Respond(w, loginResponse, http.StatusOK)
 
 }
 
+// logoutHandler POSt /api/auth/logout
+// NOT USED
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "/api/auth/logout")
 }
 
+// signUpHandler POST /api/auth/signup
 func signUpHandler(w http.ResponseWriter, r *http.Request) {
 
-	var body signUpBody
+	var body struct {
+		Username string `json:"username"`
+		Name     string `json:"name"`
+		Password string `json:"password"`
+		Email    string `json:"email"`
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -168,6 +170,7 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	// Defines a new user object
 	newUser := &models.User{
 		Username: body.Username,
 		Email:    body.Email,
@@ -175,14 +178,19 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     body.Name,
 	}
 
+	// Initalizes bookmarks by an empty []string
 	newUser.Bookmarks = []string{}
 
+	// Creates the user
 	err := user.UserUsecase.CreateUser(context.Background(), newUser)
 
+	// Error in user creation
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// User successfully created
 
 	fmt.Fprintf(w, "User creation successful! %+v\n", newUser)
 }
