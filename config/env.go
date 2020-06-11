@@ -41,7 +41,7 @@ func (a *APIEnv) load() {
 	a.SigningKey = os.Getenv("API_SIGNING_KEY")
 }
 
-// Env ...
+// Env joins multiple Env objects under one struct
 type Env struct {
 	MongoDBEnv
 	APIEnv
@@ -50,11 +50,13 @@ type Env struct {
 // LoadEnvironment Loads environment variables
 func LoadEnvironment() *Env {
 
+	// Load() function looks for .env in project root by default
 	if err := godotenv.Load(); err != nil {
 		log.Fatalln(err)
 		return nil
 	}
 
+	// env is initalised
 	env := new(Env)
 
 	env.APIEnv.load()

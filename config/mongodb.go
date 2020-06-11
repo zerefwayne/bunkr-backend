@@ -9,25 +9,33 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Returns the MongoURI from environment
+func (c *Config) generateMongoURI() string {
+
+	host := c.Env.MongoDBEnv.Host
+	port := c.Env.MongoDBEnv.Port
+	database := c.Env.MongoDBEnv.Database
+	user := c.Env.MongoDBEnv.User
+	password := c.Env.MongoDBEnv.Password
+	srvMode := c.Env.MongoDBEnv.SRV
+
+	mongoURI := ""
+
+	if srvMode == "true" {
+		mongoURI = fmt.Sprintf("mongodb+srv://%s:%s@cluster0-bevsh.mongodb.net/%s?retryWrites=true&w=majority", user, password, database)
+	} else {
+		mongoURI = fmt.Sprintf("mongodb://%s:%s", host, port)
+	}
+
+	return mongoURI
+}
+
 // ConnectMongo connects mongo
 func (c *Config) ConnectMongo() {
 
 	ctx := context.Background()
 
-	host := c.Env.MongoDBEnv.Host
-	port := c.Env.MongoDBEnv.Port
-	// user := c.Env.MongoDBEnv.User
-	// password := c.Env.MongoDBEnv.Password
-	// srvMode := c.Env.MongoDBEnv.SRV
-	url := c.Env.MongoDBEnv.URL
-
-	mongoURI := ""
-
-	if url != "" {
-		mongoURI = url
-	} else {
-		mongoURI = fmt.Sprintf("mongodb://%s:%s", host, port)
-	}
+	mongoURI := c.generateMongoURI()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		mongoURI,
@@ -39,6 +47,7 @@ func (c *Config) ConnectMongo() {
 
 	c.MongoDB = client
 
+	// Pings the client to ensure a proper connection
 	if err := c.MongoDB.Ping(context.Background(), nil); err != nil {
 		log.Fatalln(err)
 	} else {
