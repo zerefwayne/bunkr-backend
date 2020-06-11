@@ -175,6 +175,8 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     body.Name,
 	}
 
+	newUser.Bookmarks = []string{}
+
 	err := user.UserUsecase.CreateUser(context.Background(), newUser)
 
 	if err != nil {

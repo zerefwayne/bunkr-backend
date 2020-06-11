@@ -22,6 +22,34 @@ func newMongoUserRepository(client *mongo.Client) Repository {
 	}
 }
 
+func (r *userRepository) AddBookmark(ctx context.Context, userID string, resourceID string) error {
+
+	filter := bson.M{"_id": userID}
+
+	update := bson.M{"$addToSet": bson.M{"bookmarks": resourceID}}
+
+	collection := r.DB.Collection("user")
+
+	err := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return err.Err()
+
+}
+
+func (r *userRepository) RemoveBookmark(ctx context.Context, userID string, resourceID string) error {
+
+	filter := bson.M{"_id": userID}
+
+	update := bson.M{"$pull": bson.M{"bookmarks": resourceID}}
+
+	collection := r.DB.Collection("user")
+
+	err := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return err.Err()
+
+}
+
 func (r *userRepository) AddCourse(ctx context.Context, userID string, courseCode string) error {
 
 	filter := bson.M{"_id": userID}

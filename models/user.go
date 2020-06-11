@@ -9,4 +9,5 @@ type User struct {
 	Email             string   `json:"email" bson:"email"`
 	IsAdmin           bool     `json:"isAdmin" bson:"isAdmin"`
 	SubscribedCourses []string `json:"subscribedCourses" bson:"subscribedCourses"`
+	Bookmarks         []string `json:"bookmarks" bson:"bookmarks"`
 }

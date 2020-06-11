@@ -23,6 +23,9 @@ type Usecase interface {
 	RemoveCourse(ctx context.Context, userID string, courseCode string) error
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
 	GetSubscribedCourses(ctx context.Context, id string) ([]*models.Course, error)
+	AddBookmark(ctx context.Context, userID string, resourceID string) error
+	RemoveBookmark(ctx context.Context, userID string, resourceID string) error
+	GetAllBookmarks(ctx context.Context, userID string) ([]string, error)
 }
 
 type userUsecase struct {
@@ -30,6 +33,37 @@ type userUsecase struct {
 }
 
 var UserUsecase userUsecase
+
+func (u *userUsecase) GetAllBookmarks(ctx context.Context, userID string) ([]string, error) {
+
+	user, err := u.userRepo.GetByID(ctx, userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(user.Bookmarks) == 0 {
+		user.Bookmarks = []string{}
+	}
+
+	return user.Bookmarks, nil
+}
+
+func (u *userUsecase) AddBookmark(ctx context.Context, userID string, resourceID string) error {
+
+	err := u.userRepo.AddBookmark(ctx, userID, resourceID)
+
+	return err
+
+}
+
+func (u *userUsecase) RemoveBookmark(ctx context.Context, userID string, resourceID string) error {
+
+	err := u.userRepo.RemoveBookmark(ctx, userID, resourceID)
+
+	return err
+
+}
 
 func (u *userUsecase) AddCourse(ctx context.Context, userID string, courseCode string) error {
 

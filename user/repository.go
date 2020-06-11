@@ -15,4 +15,6 @@ type Repository interface {
 	GetAllUsers(ctx context.Context) ([]*models.User, error)
 	AddCourse(ctx context.Context, userID string, courseCode string) error
 	RemoveCourse(ctx context.Context, userID string, courseCode string) error
+	AddBookmark(ctx context.Context, userID string, resourceID string) error
+	RemoveBookmark(ctx context.Context, userID string, resourceID string) error
 }

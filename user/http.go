@@ -28,11 +28,72 @@ func SetUserHandlers(r *mux.Router) {
 	course.HandleFunc("/remove", removeCourseHandler)
 	course.HandleFunc("/all", getCoursesHandler)
 
+	bookmarks := r.PathPrefix("/bookmarks").Subrouter()
+
+	bookmarks.Use(utils.SecureRoute)
+
+	bookmarks.HandleFunc("/add", addBookmarkHandler)
+	bookmarks.HandleFunc("/remove", removeBookmarkHandler)
+	bookmarks.HandleFunc("/all", getBookmarksHandler)
+
 }
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Hello from user!")
+
+}
+
+func getBookmarksHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+
+	bookmarks, err := UserUsecase.GetAllBookmarks(context.Background(), userID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var payload struct {
+		Bookmarks []string `json:"bookmarks,omitempty"`
+	}
+
+	payload.Bookmarks = bookmarks
+
+	utils.Respond(w, payload, http.StatusOK)
+
+}
+
+func addBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+	resourceID := r.URL.Query().Get("resourceID")
+
+	err := UserUsecase.AddBookmark(context.Background(), userID, resourceID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	utils.Respond(w, "Success", http.StatusOK)
+
+}
+
+func removeBookmarkHandler(w http.ResponseWriter, r *http.Request) {
+
+	userID := r.Header.Get("id")
+	resourceID := r.URL.Query().Get("resourceID")
+
+	err := UserUsecase.RemoveBookmark(context.Background(), userID, resourceID)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	utils.Respond(w, "Success", http.StatusOK)
 
 }
 
