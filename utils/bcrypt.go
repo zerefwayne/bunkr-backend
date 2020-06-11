@@ -2,7 +2,8 @@ package utils
 
 import "golang.org/x/crypto/bcrypt"
 
-// CompareHashAndPassword ...
+// CompareHashAndPassword takes in password of the user and the hashed password and compares them.
+// Returns nil if passwords match.
 func CompareHashAndPassword(password string, hash string) error {
 
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
@@ -10,7 +11,7 @@ func CompareHashAndPassword(password string, hash string) error {
 	return err
 }
 
-// GenerateHashFromPassword ...
+// GenerateHashFromPassword takes in a password string and hashes it
 func GenerateHashFromPassword(password string) (string, error) {
 
 	bytePassword := []byte(password)

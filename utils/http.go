@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// Respond function is used for responding to HTTP Requests
 func Respond(w http.ResponseWriter, body interface{}, code int) {
 
 	w.Header().Set("Content-Type", "application/json")
