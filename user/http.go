@@ -19,6 +19,7 @@ func SetUserHandlers(r *mux.Router) {
 
 	r.HandleFunc("/test", defaultHandler)
 	r.HandleFunc("/", getUserHandler)
+	r.HandleFunc("/verify", verifyUserHandler)
 
 	course := r.PathPrefix("/course").Subrouter()
 
@@ -41,6 +42,21 @@ func SetUserHandlers(r *mux.Router) {
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Hello from user!")
+
+}
+
+func verifyUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	verificationCode := r.URL.Query().Get("code")
+
+	err := UserUsecase.VerifyUser(context.Background(), verificationCode)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	utils.Respond(w, "Successfully verified!", http.StatusOK)
 
 }
 

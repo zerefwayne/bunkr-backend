@@ -118,3 +118,17 @@ func (r *userRepository) CreateUser(ctx context.Context, user *models.User) erro
 func (r *userRepository) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 	return nil, nil
 }
+
+func (r *userRepository) VerifyUser(ctx context.Context, verificationCode string) error {
+
+	collection := r.DB.Collection("user")
+
+	filter := bson.M{"verificationCode": verificationCode}
+
+	update := bson.M{"$set": bson.M{"isVerified": true}}
+
+	err := collection.FindOneAndUpdate(ctx, filter, update)
+
+	return err.Err()
+
+}

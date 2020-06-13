@@ -10,4 +10,6 @@ type User struct {
 	IsAdmin           bool     `json:"isAdmin" bson:"isAdmin"`
 	SubscribedCourses []string `json:"subscribedCourses" bson:"subscribedCourses"`
 	Bookmarks         []string `json:"bookmarks" bson:"bookmarks"`
+	IsVerified        bool     `json:"isVerified" bson:"isVerified"`
+	VerificationCode  string   `json:"-" bson:"verificationCode"`
 }

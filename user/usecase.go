@@ -26,6 +26,7 @@ type Usecase interface {
 	AddBookmark(ctx context.Context, userID string, resourceID string) error
 	RemoveBookmark(ctx context.Context, userID string, resourceID string) error
 	GetAllBookmarks(ctx context.Context, userID string) ([]string, error)
+	VerifyUser(ctx context.Context, verificationCode string) error
 }
 
 type userUsecase struct {
@@ -33,6 +34,14 @@ type userUsecase struct {
 }
 
 var UserUsecase userUsecase
+
+func (u *userUsecase) VerifyUser(ctx context.Context, verificationCode string) error {
+
+	err := u.userRepo.VerifyUser(ctx, verificationCode)
+
+	return err
+
+}
 
 func (u *userUsecase) GetAllBookmarks(ctx context.Context, userID string) ([]string, error) {
 

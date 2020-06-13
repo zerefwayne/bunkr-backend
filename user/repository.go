@@ -17,4 +17,5 @@ type Repository interface {
 	RemoveCourse(ctx context.Context, userID string, courseCode string) error
 	AddBookmark(ctx context.Context, userID string, resourceID string) error
 	RemoveBookmark(ctx context.Context, userID string, resourceID string) error
+	VerifyUser(ctx context.Context, verificationCode string) error
 }
