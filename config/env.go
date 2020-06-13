@@ -41,10 +41,21 @@ func (a *APIEnv) load() {
 	a.SigningKey = os.Getenv("API_SIGNING_KEY")
 }
 
+type SendGridEnv struct {
+	User string
+	Key  string
+}
+
+func (s *SendGridEnv) load() {
+	s.User = os.Getenv("SENDGRID_USER")
+	s.Key = os.Getenv("SENDGRID_KEY")
+}
+
 // Env joins multiple Env objects under one struct
 type Env struct {
 	MongoDBEnv
 	APIEnv
+	SendGridEnv
 }
 
 // LoadEnvironment Loads environment variables
@@ -61,6 +72,7 @@ func LoadEnvironment() *Env {
 
 	env.APIEnv.load()
 	env.MongoDBEnv.load()
+	env.SendGridEnv.load()
 
 	return env
 
