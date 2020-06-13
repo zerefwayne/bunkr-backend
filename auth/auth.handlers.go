@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/xid"
 	"github.com/zerefwayne/college-portal-backend/models"
 	"github.com/zerefwayne/college-portal-backend/user"
 	"github.com/zerefwayne/college-portal-backend/utils"
@@ -172,14 +173,14 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Defines a new user object
 	newUser := &models.User{
-		Username: body.Username,
-		Email:    body.Email,
-		Password: body.Password,
-		Name:     body.Name,
+		Username:         body.Username,
+		Email:            body.Email,
+		Password:         body.Password,
+		Name:             body.Name,
+		IsVerified:       false,
+		VerificationCode: xid.New().String(),
+		Bookmarks:        []string{},
 	}
-
-	// Initalizes bookmarks by an empty []string
-	newUser.Bookmarks = []string{}
 
 	// Creates the user
 	err := user.UserUsecase.CreateUser(context.Background(), newUser)
@@ -189,6 +190,8 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Sending verification code to %s with code %s for user %s\n", newUser.Email, newUser.VerificationCode, newUser.ID)
 
 	// User successfully created
 
