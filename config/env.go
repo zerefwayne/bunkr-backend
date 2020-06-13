@@ -42,13 +42,13 @@ func (a *APIEnv) load() {
 }
 
 type SendGridEnv struct {
-	User string
-	Key  string
+	Key            string
+	BunkrClientURL string
 }
 
 func (s *SendGridEnv) load() {
-	s.User = os.Getenv("SENDGRID_USER")
 	s.Key = os.Getenv("SENDGRID_KEY")
+	s.BunkrClientURL = os.Getenv("BUNKR_CLIENT_URL")
 }
 
 // Env joins multiple Env objects under one struct

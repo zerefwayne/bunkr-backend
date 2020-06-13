@@ -193,6 +193,14 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Sending verification code to %s with code %s for user %s\n", newUser.Email, newUser.VerificationCode, newUser.ID)
 
+	response, err := utils.SendVerificationEmail(newUser.VerificationCode, newUser.Name, newUser.Email)
+
+	if err != nil {
+		log.Printf("Failed to send verification email %v\n", err)
+	} else {
+		log.Printf("Successfully send verification email %+v\n", response)
+	}
+
 	// User successfully created
 
 	fmt.Fprintf(w, "User creation successful! %+v\n", newUser)
